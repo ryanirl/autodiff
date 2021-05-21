@@ -1,0 +1,94 @@
+import numpy as np
+from autodiff.tensor import Tensor, OP
+from autodiff.ops import grad_fun, value_fun
+from autodiff.utils import primitive, check
+import time 
+
+def test0():
+    # Test
+    # Should be:
+    # Value: 22500
+    # df/dA: 310500
+    # df/dB: 242996
+    # df/dC: -3
+
+    a = Tensor(2)
+    b = Tensor(3)
+    c = Tensor(4)
+
+    z = a + b
+    y = z ** 2
+    x = y * b
+    w = x * a
+    v = w ** 2
+    u = a * b
+    t = v * u
+    s = c * b
+    r = t - s
+
+    r.backward()
+
+    print("value: ({}) should be 134988".format(r.value))
+    print("grad wrt A: ({}) should be 310500".format(a.grad))
+    print("grad wrt B: ({}) should be 242996".format(b.grad))
+    print("grad wrt C: ({}) should be -3".format(c.grad))
+
+def speedtest():
+
+    # This is a standard test for me:
+    # Average run time using topo sort and olf backwards method: 7.4s over 5 runs
+    # Average run time using new method without topo sort: 6.3s over 5 runs
+    # Literally cut off a second which is quite large in the grand scheme of things
+
+    # This takes 3 seconds to run 100,000 iterations without autodiff and implimenting 
+    # it by hand with computing the gradient of OLS. Meaning that it only takes twice
+    # the time using AutoDiff and not being told it's gradient. That's quite impressive
+
+    start = time.time()
+
+    def OLS_loss(w, x, b, y):
+        return (y - (w * x + b)) ** 2
+
+    class Neuron:
+        def __init__(self, loss, dims):
+            self.weights = Tensor([np.random.uniform() for i in range(dims)])
+            self.bias = Tensor(np.random.uniform())
+            self.dims = dims
+            self.loss = loss
+
+        def forward(self, x, y):
+            self.y = y
+            self.x = x
+
+        def step(self, itter, eta):
+            for i in range(itter):
+                self.loss(self.weights, self.x, self.bias, self.y).backward()
+
+                self.weights.value = self.weights.value - eta * self.weights.grad.sum()
+                self.bias.value = self.bias.value - eta * self.bias.grad.sum()
+
+                self.weights.grad = 0
+                self.bias.grad = 0
+                self.x.grad = 0
+                self.y.grad = 0
+
+            return self.weights, self.bias
+
+    x = Tensor([0, 1, 3], requires_grad = False)
+    y = Tensor([1, 4, 10], requires_grad = False)
+
+    neuron = Neuron(OLS_loss, 1)
+    neuron.forward(x, y)
+    weight, bias = neuron.step(100000, 0.01)
+    print(weight.value)
+    print(bias.value)
+
+    end = time.time()
+
+    print(f"Runtime of the program is {end - start}")
+
+
+if __name__ == "__main__":
+    test0()
+    speedtest()
+
