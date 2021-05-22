@@ -102,8 +102,8 @@ class Tensor:
         def recurse(tensor):
             grad = tensor._outgrad(tensor.grad, *tensor._children, tensor.value)
 
-            for child, local_grad in zip(tensor._children, grad):
-                child.grad = child.grad + local_grad
+            for child, ingrad in zip(tensor._children, grad):
+                child.grad = child.grad + ingrad
 
                 recurse(child)
 

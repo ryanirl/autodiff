@@ -4,6 +4,8 @@ from autodiff.ops import grad_fun, value_fun
 from autodiff.utils import primitive, check
 import time 
 
+# This is a mess 
+
 def test0():
     # Test
     # Should be:
@@ -36,7 +38,7 @@ def test0():
 def speedtest():
 
     # This is a standard test for me:
-    # Average run time using topo sort and olf backwards method: 7.4s over 5 runs
+    # Average run time using topo sort and old backwards method: 7.4s over 5 runs
     # Average run time using new method without topo sort: 6.3s over 5 runs
     # Literally cut off a second which is quite large in the grand scheme of things
 
