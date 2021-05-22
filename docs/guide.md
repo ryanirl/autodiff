@@ -5,7 +5,7 @@
 ---
 
 Plan:
- - Motivation for AutoDiff
+ - Motivation for AutoDiff (add link to tensorflow and pytorch)
  - How AutoDiff works: Reverse-Mode / Computation Graph / etc.
  - How to define Primitive OPS
 
@@ -13,17 +13,23 @@ Plan:
 
 ### Motivation for AutoDiff
 
-HAVEN'T WORKED ON
+Why spend hours computing the gradients for backprop when you can just automate
+it with AutoDiff :)
+
+AutoDiff's goal is to be an *extremely* intuitive and lightweight automatic
+differentiation libary (though I made add hardware acceleration in the future)
+built for educational use. 
 
 ---
 
-### How AutoDiff Works
+### AutoDiff Basics
 
-HAVEN'T WORKED ON
+HAVEN'T WORKED ON YET
+
 
 ---
 
-### How to Define Primitive Ops
+### More Adanced: How to Define Primitive Ops
 
 When writing your own primitive ops you need to know 3 things:
 
@@ -49,11 +55,11 @@ from autodiff.utils import primitive
 
 ```
 
-1. Defining the value of your new primitive OP. AutoDiff makes use
+**Step #1:** Defining the value of your new primitive OP. AutoDiff makes use
 of python lambda function and for this example we are going to use
 the tanh(x) function who's value is as follows:
 
-tanh(x) = (e(x) - e(-x)) / (e(x) + e(-x))
+tanh(x) = e(x) - e(-x)) / (e(x) + e(-x)
 
 Then to define the value of this OP we do:
 
@@ -71,19 +77,19 @@ value_fun["tanh"] = (lambda x: (e(x) - e(-x)) / (e(x) + e(-x)))
 
 ```
 
-2. Defining the gradient of tanh(x). 
+**Step #2:** Defining the gradient of tanh(x). 
 
 This step is by far the most compicated to understand but pretty easy if
-you have worked with automatic differentiation before. 
-
-**Note 1:** For the grad_fun we must define the lamda as so: 
-
-lambda g, variables, z: ((g * partial_variable_1), ... , (g * partial_variable_n)) 
-
-where g will be chain rule step and z will be the value of the function. 
+you have worked with automatic differentiation before. Hopefully the following
+image explains it enough.
 
 
-**Note 2:** If the primitve op is a unary operator then we need to wrap the single
+<p align="center">
+ <img src="../img/grad_fun_example.png" width="90%">
+</p>
+
+
+**Note 1:** If the primitve op is a unary operator then we need to wrap the single
 defined grad in a list [] so Python can consider it an iterable. This is not needed
 for ops that rely on more than one variable.
 
@@ -100,7 +106,7 @@ grad_fun["tanh"] = (lambda g, x, z: [(g * (1.0 - (z ** 2)))])
 
 ```
 
-Now the last step is easy and all we need to do is send our new OP to the Tensor class
+**Step #3:** For the final step all we need to do is send our new OP to the Tensor class
 as a method. We can do this by using the following wrap:
 
 ```python
@@ -112,7 +118,7 @@ def tanh(self):
 
 ```
 
-Now we can use tanh as if it was a primitive tensor op:
+Now we can use the tanh(x) function as if it was a primitive tensor op:
 
 ```python
 
@@ -125,8 +131,8 @@ print(f"The gradient of tanh(x) w.r.t. x is: {x.grad}")
 
 ```
 
-**Note 3:** For more intuition into how you might go about defining your own primitive ops.
-Feel free to check out autodiff/ops.py where all of the current primitve ops are defined.
+**Note 2:** For more intuition into how you might go about defining your own primitive ops.
+Feel free to check out autodiff/ops.py where all of the current primitive ops are defined.
 
 
 ---
