@@ -51,7 +51,7 @@ Now with support for user-defined primitive functions!
 ### Installation
 
 At the moment just gonna have to clone the repo and make sure you have numpy
-installes which is it's only dependency.
+installed which is it's only dependency.
 
 Not tested on Python2.
 
@@ -102,7 +102,9 @@ from lambdas import grad_fun, value_fun
 from utils import primitive, check
 
 value_fun["linear"] = (lambda w, x, b: ((w.value * x.value) + b.value))
-grad_fun["linear"] = (lambda w, x, b, z: (x.sum(), w.value, 1))
+
+# multiplying each gradient by "g" is requied by the chain rule
+grad_fun["linear"] = (lambda g, w, x, b, z: (g * x.sum(), g * w.value, g * 1))
 
 # Check(x, Tenor) just garentees that some x is not Tensor
 @primitive(Tensor)
