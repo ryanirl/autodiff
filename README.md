@@ -13,7 +13,7 @@
 **WORK IN PROGRESS*
 
 AutoDiff is a lightweight reverse-mode automatic differentiation (a.k.a
-backpropagation) libary written in Python with Numpy vectorization.
+backpropagation) library written in Python with Numpy vectorization.
 AutoDiff works by breaking up larger user defined functions into primitive
 operators (such as addition, muliplication, etc.) whos derivatives are
 pre-defined. Autodiff then dynamically builds a computation graph of the larger
@@ -68,31 +68,30 @@ from autodiff.tensor import Tensor
 
 a = Tensor(2)
 b = Tensor(3)
-c = Tensor(4)
+
+# This is the same as writing f(x) = ((a + b) * a)^2
+# We just break it down into primitive ops
 
 z = a + b
-y = z ** 2
-x = y * b
-w = x * a
-v = w ** 2
-u = a * b
-t = v * u
-s = c * b
-r = t - s
+y = z * a
+x = y ** 2
 
-r.backward()
+# This is where the magic happens
+x.backward()
 
-print("value: ({}) should be 134988".format(r.value))
-print("grad wrt A: ({}) should be 310500".format(a.grad))
-print("grad wrt B: ({}) should be 242996".format(b.grad))
-print("grad wrt C: ({}) should be -3".format(c.grad))
+print("value: ({})".format(x.value))
+print("grad wrt A: ({})".format(a.grad))
+print("grad wrt B: ({})".format(b.grad))
 
 ```
 
 ---
 
-You can even define your own primitive functions. An example of a user defined
-primitive function may be:
+I plan on simplifying this but right now you can even define your own primitive
+functions. An example of a user defined primitive function may be: 
+
+**Note #1:** To better understand this code and how works and how to add your own
+primitive operators, I will be working on a guide soon. 
 
 ```python
 
@@ -101,27 +100,30 @@ from tensor import Tensor, OP
 from lambdas import grad_fun, value_fun
 from utils import primitive, check
 
-value_fun["linear"] = (lambda w, x, b: ((w.value * x.value) + b.value))
+def e(x):
+    """
+    You don't need this I am just using it to simplify
+    the value function.
+
+    """
+    return np.exp(x.value)
+
+value_fun["tanh"] = (lambda x: (e(x) - e(-x)) / (e(x) + e(-x)))
 
 # multiplying each gradient by "g" is requied by the chain rule
-grad_fun["linear"] = (lambda g, w, x, b, z: (g * x.sum(), g * w.value, g * 1))
+grad_fun["tanh"] = (lambda g, x, z: [(g * (1.0 - (z ** 2)))])
 
 # Check(x, Tenor) just garentees that some x is not Tensor
 @primitive(Tensor)
-def linear(self, w, b):
-    return OP("linear", check(w, Tensor), self, check(b, Tensor))
+def tanh(self):
+    return OP("tanh", self);
 
-x = Tensor([1, 1, 3], requires_grad = True)
-y = Tensor([1, 4, 10], requires_grad = False)
-w = Tensor([1])
-b = Tensor([2])
+x = Tensor([1, 2, 3])
+y = x.tanh()
 
-test = x.linear(w, b)
-test.backward()
+y.backward()
 
-print(w.grad)
-print(b.grad)
-print(x.grad)
+print(f"The gradient of x: {x.grad}")
 
 ```
 
