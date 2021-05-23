@@ -29,7 +29,7 @@ HAVEN'T WORKED ON YET
 
 ---
 
-### More Adanced: How to Define Primitive Ops
+### How to Define Primitive Ops
 
 When writing your own primitive ops you need to know 3 things:
 
@@ -59,7 +59,7 @@ from autodiff.utils import primitive
 of python lambda function and for this example we are going to use
 the tanh(x) function who's value is as follows:
 
-tanh(x) = e(x) - e(-x)) / (e(x) + e(-x)
+tanh(x) = (e(x) - e(-x)) / (e(x) + e(-x))
 
 Then to define the value of this OP we do:
 

@@ -45,15 +45,11 @@ class Tensor:
     def __rdiv__(self, other):
         return OP("div", check(other, Tensor), self)
 
-    # Properties
+    # Properties 
 
     @property
     def shape(self):
-        return self.data.shape
-
-    @property
-    def dtype(self):
-        return self.data.dtype
+        return self.value.shape
 
     @classmethod
     def zeros(cls, *shape, **kwargs):
@@ -89,10 +85,11 @@ class Tensor:
     def log(self):
         return OP("log", self)
         
-    # NEED TO TEST #
-
-    def dot(self, other):
+    def dot(self, other): # Works for 2D arrays!
         return OP("dot", self, check(other, Tensor))
+
+    def exp(self):
+        return OP("exp", self)
 
     # Need Transpose functions
         
@@ -107,7 +104,7 @@ class Tensor:
 
                 recurse(child)
 
-        self.grad = 1 
+        self.grad = 1
 
         recurse(self)
 

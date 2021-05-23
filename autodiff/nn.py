@@ -11,5 +11,3 @@ from autodiff.utils import primitive, check
 # basically want functionallity like this:
 # x.dot(l1).relu().dot(l2).relu().dot(l3).sigmoid()
 
-
-

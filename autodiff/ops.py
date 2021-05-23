@@ -41,8 +41,11 @@ value_fun["log"] = (lambda x: np.log(x.value))
 
 
 ### --- STILL NEED TO TEST SO PROBABLY DON'T USE --- ###
-grad_fun["dot"] = (lambda g, x, y, z: (g * y.value.T, g * x.value.T))
+grad_fun["dot"] = (lambda g, x, y, z: (np.dot(g, y.value.T), np.dot(x.value.T, g)))
 value_fun["dot"] = (lambda x, y: np.dot(x.value, y.value))
+
+grad_fun["exp"] = (lambda g, x, z: [(g * z)])
+value_fun["exp"] = (lambda x: (np.exp(x.value)))
 
 
 
