@@ -104,7 +104,7 @@ class Tensor:
 
                 recurse(child)
 
-        self.grad = 1
+        self.grad = np.ones(np.shape(self.value))
 
         recurse(self)
 

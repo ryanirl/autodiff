@@ -50,3 +50,6 @@ value_fun["exp"] = (lambda x: (np.exp(x.value)))
 
 
 
+
+
+

@@ -3,3 +3,5 @@
 # - Adam
 # - RMSProp
 # - SGD
+
+from tensor import Tensor

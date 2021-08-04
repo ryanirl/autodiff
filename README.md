@@ -28,7 +28,7 @@ simplier and more intuitive of the methods.
 This project is still very much a work in progress and I plan on building this
 into a mini deep learning library with support for training basic MLP's, 
 CNN's, and more. I also plan on supporting higher-order derivatives once I'm 
-done building the support for basic neural nets. (Why? Because I can.)
+done building the support for basic neural nets. 
 
 Now with support for user-defined primitive functions!
 
@@ -40,7 +40,6 @@ Now with support for user-defined primitive functions!
  - Neural Net functionality (nn.py)
  - Optimizations: Adam, Momentum, SGD, RMSProp (optim.py)
  - Convolutions (???)
- - DOCS & Draw.io
 
 #### Might consider adding in the future:
  - Hardware Acceleration 
@@ -100,20 +99,14 @@ from tensor import Tensor, OP
 from lambdas import grad_fun, value_fun
 from utils import primitive, check
 
-def e(x):
-    """
-    You don't need this I am just using it to simplify
-    the value function.
-
-    """
-    return np.exp(x.value)
+def e(x): return np.exp(x.value)
 
 value_fun["tanh"] = (lambda x: (e(x) - e(-x)) / (e(x) + e(-x)))
 
 # multiplying each gradient by "g" is requied by the chain rule
 grad_fun["tanh"] = (lambda g, x, z: [(g * (1.0 - (z ** 2)))])
 
-# Check(x, Tenor) just garentees that some x is not Tensor
+
 @primitive(Tensor)
 def tanh(self):
     return OP("tanh", self);
@@ -123,7 +116,7 @@ y = x.tanh()
 
 y.backward()
 
-print(f"The gradient of x: {x.grad}")
+print("The gradient of y wrt x: {}".format(x.grad))
 
 ```
 
