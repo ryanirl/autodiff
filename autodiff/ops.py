@@ -49,7 +49,8 @@ value_fun["exp"] = (lambda x: (np.exp(x.value)))
 
 
 
-
-
+#def softmax(X):
+#    exps = np.exp(X - np.max(X))
+#    return exps / np.sum(exps)
 
 
