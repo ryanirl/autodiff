@@ -47,10 +47,6 @@ value_fun["dot"] = (lambda x, y: np.dot(x.value, y.value))
 grad_fun["exp"] = (lambda g, x, z: [(g * z)])
 value_fun["exp"] = (lambda x: (np.exp(x.value)))
 
-
-
 #def softmax(X):
 #    exps = np.exp(X - np.max(X))
 #    return exps / np.sum(exps)
-
-

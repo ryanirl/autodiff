@@ -74,6 +74,9 @@ class Tensor:
     # Custom Ops
 
     def sum(self): # STILL NEED TO IMPLEMENT
+        """
+        NEED TO WORK ON
+        """
         pass
 
     def sigmoid(self):
@@ -90,12 +93,6 @@ class Tensor:
 
     def exp(self):
         return OP("exp", self)
-
-#    def cross_entropy_loss(self, y):
-#        return OP("cross_entropy_loss", self, y)
-#
-#    def hinge_loss(self, y):
-#        return OP("hinge_loss", self, y)
 
     # Need Transpose functions
         
