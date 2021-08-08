@@ -8,7 +8,18 @@ from sklearn.datasets import make_moons, make_blobs
 
 # NOT YET TESTED
 
+#class Model:
+#    self.parameters = []
+#    def parameters(self):
+#        return self.parameters
+#
+#    def zero_grad(self):
+#        for param in self.parameters:
+#            param.grad = 0
+#
+
 params = []
+
 class Linear:
     def __init__(self, dims_in, dims_out, bias = True):
         self.weight = Tensor.uniform(dims_in, dims_out)

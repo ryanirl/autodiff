@@ -45,6 +45,12 @@ class Tensor:
     def __rdiv__(self, other):
         return OP("div", check(other, Tensor), self)
 
+    def __truediv__(self, other):
+        return OP("div", self, check(other, Tensor))
+
+    def __rtruediv__(self, other):
+        return OP("div", check(other, Tensor), self)
+
     # Properties 
 
     @property
@@ -73,11 +79,10 @@ class Tensor:
 
     # Custom Ops
 
-    def sum(self): # STILL NEED TO IMPLEMENT
-        """
-        NEED TO WORK ON
-        """
-        pass
+#    def sum(self, axis = None): 
+#        self.cache = self.value
+#        self.axis = axis
+#        return OP("sum", self)
 
     def sigmoid(self):
         return OP("sigmoid", self)
@@ -94,11 +99,25 @@ class Tensor:
     def exp(self):
         return OP("exp", self)
 
-    # Need Transpose functions
+    def softmax(self):
+        return OP("softmax", self)
+
+    def leaky_relu(self):
+        return OP("leaky_relu", self)
+
+    def tanh(self):
+        return OP("tanh", self);
+
+    # Need Transpose functions (static or class method just like numpy)
+
+    # Private Functions
+
+    def _route(self, value, grad):
+        pass
         
     # Backwards
 
-    def backward(self):
+    def backward(self, ingrad = False):
         def recurse(tensor):
             grad = tensor._outgrad(tensor.grad, *tensor._children, tensor.value)
 

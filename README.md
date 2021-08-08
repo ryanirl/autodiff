@@ -96,8 +96,11 @@ primitive operators, I will be working on a guide soon.
 
 import numpy as np
 from tensor import Tensor, OP
-from lambdas import grad_fun, value_fun
+from ops import grad_fun, value_fun
 from utils import primitive, check
+
+# NOTE: TANH HAS ALREADY BEEN IMPLEMENTED, THOUGH THIS IS HOW IT
+# WOULD WORK IF IT WEREN'T ALREADY 
 
 def e(x): return np.exp(x.value)
 
