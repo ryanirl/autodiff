@@ -2,41 +2,39 @@ import numpy as np
 from autodiff.tensor import Tensor, OP
 from autodiff.ops import grad_fun, value_fun
 from autodiff.utils import primitive, check
-from sklearn.datasets import make_blobs
-import matplotlib.pyplot as plt
-from sklearn.datasets import make_moons, make_blobs
 
-# NOT YET TESTED
 
-#class Model:
-#    self.parameters = []
-#    def parameters(self):
-#        return self.parameters
-#
-#    def zero_grad(self):
-#        for param in self.parameters:
-#            param.grad = 0
-#
+class Module:
+    def __init__(self):
+        self.params = []
 
-params = []
+    def parameters(self):
+        return self.params
 
-class Linear:
+
+class Linear(Module):
     def __init__(self, dims_in, dims_out, bias = True):
+        super().__init__()
+
         self.weight = Tensor.uniform(dims_in, dims_out)
-        params.append(self.weight)
+        self.params.append(self.weight)
         self.needs_bias = bias
 
         if self.needs_bias == True: 
-            self.bias = Tensor.zeros(dims_out)
-            params.append(self.bias)
+            self.bias = Tensor.uniform(dims_out)
+            self.params.append(self.bias)
 
     def __call__(self, X):
         if self.needs_bias: return X.dot(self.weight) + self.bias
         else: return X.dot(self.weight)
 
-class Sequential:
+class Sequential(Module):
     def __init__(self, *layers): 
+        self.params = []
         self.layers = layers
+
+        for layer in layers:
+            self.params += layer.parameters()
 
     def __call__(self, X):
         for layer in self.layers:
@@ -44,51 +42,28 @@ class Sequential:
 
         return X
 
-    def zero_grad(self):
-        for p in params:
-            p.grad = 0
 
+####### --------- ACTIVATION LAYERS --------- ####### 
 
-    def step(self):
-        for p in params:
-            p.value = p.value - 0.01 * p.grad
+class ReLU(Module):
+    def __call__(self, X): return X.relu()
 
-        self.zero_grad()
+class Sigmoid(Module):
+    def __call__(self, X): return X.sigmoid()
 
-if __name__ == "__main__":
-    X, y = make_blobs(n_samples = 100, centers = 2)
+class Softmax(Module):
+    def __call__(self, X): return X.softmax()
 
-    X = Tensor(X)
-    y = Tensor(np.array(y)[:, np.newaxis])
+class LeakyReLU(Module):
+    def __call__(self, X): return X.leaky_relu()
 
-    ## SPLIT ## 
+class Tanh(Module):
+    def __call__(self, X): return X.tanh()
 
-    Y = y.value
-    X = X.value
-    print(np.shape(X))
+class Sigmoid(Module):
+    def __call__(self, X): return X.sigmoid()
 
-    for i in range(100):
-        if (Y[i] == 1):
-            plt.scatter(X[i][0], X[i][1], color="green") 
-        else:
-            plt.scatter(X[i][0], X[i][1], color="blue") 
-
-        
-    x = np.linspace(-20, 20, 20)
-    hyperplane = ((-(weight0 / weight1) * x) - (bias/weight1))
-
-    plt.plot(x, hyperplane, '-', color="blue")
-    plt.show()
-
-
-
-
-
-
-
-
-
-
+##################################################### 
 
 
 

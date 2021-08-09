@@ -2,7 +2,7 @@
 
 import numpy as np
 from autodiff.ops import grad_fun, value_fun
-from autodiff.utils import check
+from autodiff.utils import check, _isscalar
 
 class Tensor:
     def __init__(self, value, _children = [], requires_grad = True):
@@ -19,7 +19,12 @@ class Tensor:
         return self * -1
 
     def __add__(self, other):
-        return OP("add", self, check(other, Tensor))
+        other = check(other, Tensor)
+
+        if (_isscalar(self) ^ _isscalar(other)):
+            return OP("scalar_broadcast_add", self, other)
+
+        return OP("add", self, other)
 
     def __radd__(self, other):
         return self + other
@@ -50,6 +55,9 @@ class Tensor:
 
     def __rtruediv__(self, other):
         return OP("div", check(other, Tensor), self)
+
+    def scalar_broadcast_add(self, other):
+        return OP("scalar_broadcast_add", self, check(other, Tensor))
 
     # Properties 
 
@@ -93,7 +101,7 @@ class Tensor:
     def log(self):
         return OP("log", self)
         
-    def dot(self, other): # Works for 2D arrays!
+    def dot(self, other):
         return OP("dot", self, check(other, Tensor))
 
     def exp(self):
@@ -110,14 +118,9 @@ class Tensor:
 
     # Need Transpose functions (static or class method just like numpy)
 
-    # Private Functions
-
-    def _route(self, value, grad):
-        pass
-        
     # Backwards
 
-    def backward(self, ingrad = False):
+    def backward(self):
         def recurse(tensor):
             grad = tensor._outgrad(tensor.grad, *tensor._children, tensor.value)
 

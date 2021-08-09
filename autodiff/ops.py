@@ -46,12 +46,29 @@ value_fun["exp"] = (lambda x: (np.exp(x.value)))
 grad_fun["dot"] = (lambda g, x, y, z: (np.dot(g, y.value.T), np.dot(x.value.T, g)))
 value_fun["dot"] = (lambda x, y: np.dot(x.value, y.value))
 
+# This works the same I'm pretty sure.
+#grad_fun["dot"] = (lambda g, x, y, z: (g @ y.value.T, x.value.T @ g))
+#value_fun["dot"] = (lambda x, y: x.value @ y.value)
+
 #value_fun["sum"] = (lambda x: (x.value.sum(axis = 1, keepdims = True)))
 #grad_fun["sum"] = (lambda g, x, z: (g * x.cache, ))
 
 
 
 ######### --- NON-TRIVIAL OPS --- #########
+
+# I should be able to simplify this by recording sizes at initialization
+def scalar_broadcast_add_backward(var, ingrad):
+    if (var.shape == (1, 1)) or (var.shape == (1, )) or (var.shape == 1):
+        return np.sum(ingrad)
+    else:
+        return ingrad
+
+value_fun["scalar_broadcast_add"] = (lambda x, y: x.value + y.value)
+grad_fun["scalar_broadcast_add"] = (lambda g, x, y, z: (scalar_broadcast_add_backward(x, g), scalar_broadcast_add_backward(y, g)))
+
+
+
 
 
 def softmax_forward(data):
@@ -84,11 +101,9 @@ def softmax_backward(ingrad, forward_out):
 
     return out 
 
-
 value_fun["softmax"] = (lambda x: softmax_forward(x.value))
 
 grad_fun["softmax"] = (lambda g, x, z: [softmax_backward(g, z)])
-
 
 
 

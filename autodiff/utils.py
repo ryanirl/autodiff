@@ -1,3 +1,4 @@
+import numpy as np
 
 def check(x, Type): 
     return x if isinstance(x, Type) else Type(x)
@@ -8,4 +9,17 @@ def primitive(Class):
         return method 
     return register_methods
 
+def _isscalar(tensor):
+    if (tensor.shape == 1) or (tensor.shape == (1, )) or (tensor.shape == (1, 1)):
+        return True
+    else:
+        return False
 
+def to_logits(pred):
+    EPS = 1e-06
+
+    pred = np.clip(pred, EPS, 1.0 - EPS)
+
+    logits = np.log(pred / (1.0 - pred))
+
+    return logits
