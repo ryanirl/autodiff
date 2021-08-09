@@ -3,6 +3,8 @@ test.py
 goal.py
 storage.py
 benchmark.py
+bias.py
+custom_log.py
 
 
 # Created by https://www.toptal.com/developers/gitignore/api/macos,jupyternotebooks,python
