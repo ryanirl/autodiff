@@ -19,12 +19,7 @@ class Tensor:
         return self * -1
 
     def __add__(self, other):
-        other = check(other, Tensor)
-
-        if (_isscalar(self) ^ _isscalar(other)):
-            return OP("scalar_broadcast_add", self, other)
-
-        return OP("add", self, other)
+        return OP("add", self, check(other, Tensor))
 
     def __radd__(self, other):
         return self + other
@@ -56,9 +51,6 @@ class Tensor:
     def __rtruediv__(self, other):
         return OP("div", check(other, Tensor), self)
 
-    def scalar_broadcast_add(self, other):
-        return OP("scalar_broadcast_add", self, check(other, Tensor))
-
     # Properties 
 
     @property
@@ -87,10 +79,17 @@ class Tensor:
 
     # Custom Ops
 
-#    def sum(self, axis = None): 
-#        self.cache = self.value
-#        self.axis = axis
-#        return OP("sum", self)
+    def sum(self, axis = None, keepdims = True): 
+        self.axis = axis
+        self.shape_in = self.shape
+        self.keepdims = keepdims
+        return OP("sum", self)
+
+    def transpose(self): # NOT TESTED
+        return OP("transpose", self)
+
+    def reshape(self, size):
+        return OP("reshape", self, size)
 
     def sigmoid(self):
         return OP("sigmoid", self)
@@ -115,8 +114,6 @@ class Tensor:
 
     def tanh(self):
         return OP("tanh", self);
-
-    # Need Transpose functions (static or class method just like numpy)
 
     # Backwards
 
