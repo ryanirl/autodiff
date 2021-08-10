@@ -1,5 +1,3 @@
-#*Dimensions: X = (150, 4) ; Weights = (4,3) ; y = (150, 3)*
-
 from autodiff.tensor import Tensor
 import autodiff.nn as nn
 import numpy as np

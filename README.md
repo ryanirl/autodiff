@@ -25,24 +25,48 @@ Though there are various methods to do reverse-mode automatic differentiation.
 AutoDiff works via Python's Operator Overloading abilities which is by far the
 simplier and more intuitive of the methods. 
 
-This project is still very much a work in progress and I plan on building this
-into a mini deep learning library with support for training basic MLP's, 
-CNN's, and more. I also plan on supporting higher-order derivatives once I'm 
-done building the support for basic neural nets. 
+This project is still very much a work in progress and I am currently in the
+process of building this into a mini deep learning library with support for
+training basic MLP's, CNN's, and more. I am also considering on adding support
+for higher-order derivatives once I'm done building the support for basic
+neural nets. 
 
-Now with support for user-defined primitive functions!
+---
+
+
+<!-- Currently Supported -->
+### Currently Supported NN Features:
+
+**Layers:**
+ - Linear
+ - Sequential
+
+
+**Activation Functions:**
+ - ReLU
+ - Leaky ReLU
+ - Sigmoid
+ - Softmax
+ - TanH
+
+
+**Loss Functions:**
+ - MSE 
+ - Stable Binary Cross Entropy (Logits)
+ - Categorical Cross Entropy (In the process of testing)
+
 
 ---
 
 <!-- TODO -->
 ### TODO:
- - Add Examples and Tests (tests)
- - Neural Net functionality (nn.py)
- - Optimizations: Adam, Momentum, SGD, RMSProp (optim.py)
- - Convolutions (???)
+ - Optimizations: Adam, Momentum, RMSProp (optim.py)
+ - Loss Functions: Hinge, MAE, ...
+ - Convolutions :)
 
 #### Might consider adding in the future:
  - Hardware Acceleration 
+
 
 ---
 
