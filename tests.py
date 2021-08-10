@@ -2,9 +2,26 @@ import numpy as np
 from autodiff.tensor import Tensor, OP
 from autodiff.ops import grad_fun, value_fun
 from autodiff.utils import primitive, check
+import autodiff.nn as nn
 import time 
 
 # This is a mess 
+def softmaxCCE():
+    a = Tensor(np.array([[1, 2, 3], [1, 2, 3]]))
+    b = Tensor(np.array([[0, 1, 0], [1, 0, 0]]))
+
+    loss_func = nn.CrossEntropy() 
+
+    c = a.softmax()
+
+    loss = loss_func(c, b)
+
+    loss.backward()
+
+    print(c.grad)
+    print(a.grad)
+
+
 
 def test0():
     # Test
@@ -118,6 +135,7 @@ def test3():
 
 
 if __name__ == "__main__":
+    softmaxCCE()
     test0()
     speedtest()
     test3()

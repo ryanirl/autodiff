@@ -108,7 +108,6 @@ grad_fun["softmax"] = (lambda g, x, z: [softmax_backward(g, z)])
 
 
 
-
 grad_fun["leaky_relu"] = (lambda g, x, z: [g * np.where(x.value > 0, 1, 0.1)])
 
 value_fun["leaky_relu"] = (lambda x: np.maximum(x.value, 0.1 * x.value)) # NEED TO TEST

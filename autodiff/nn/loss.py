@@ -58,9 +58,13 @@ BinaryCE = StableBinaryCrossEntropy
 
 ####### -------------- CATEGORICAL CROSS ENTROPY LOSS --------------  ########
 
-value_fun["cross_entropy_loss"] = (lambda pred, actual: -np.sum(actual.value * np.log(pred.value), axis = 1, keepdims = True))
+def keep_stable(value):
+    EPS = 1e-6
+    return np.clip(value, EPS, 1.0 - EPS)
 
-grad_fun["cross_entropy_loss"] = (lambda g, pred, actual, z: (g * (-actual.value / (pred.value + 1e-6)), ))
+value_fun["cross_entropy_loss"] = (lambda pred, actual: -np.sum(actual.value * np.log(keep_stable(pred.value)), axis = 1, keepdims = True))
+
+grad_fun["cross_entropy_loss"] = (lambda g, pred, actual, z: ((-actual.value / (pred.value + 1e-6)), ))
 
 @primitive(Tensor)
 def cross_entropy_loss(self, actual):
@@ -69,7 +73,7 @@ def cross_entropy_loss(self, actual):
 class CrossEntropy:
     def __call__(self, pred, actual):
         self.out = pred.cross_entropy_loss(actual)
-        return self.out
+        return self.out 
 
     def backward(self): self.out.backward()
 
