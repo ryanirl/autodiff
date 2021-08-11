@@ -4,16 +4,18 @@ import numpy as np
 from autodiff.ops import grad_fun, value_fun
 from autodiff.utils import check, _isscalar
 
+
 class Tensor:
     def __init__(self, value, _children = [], requires_grad = True):
-        self.value = value if isinstance(value, np.ndarray) else np.array(value)
+        self.value = np.atleast_2d(value) if isinstance(value, np.ndarray) else np.atleast_2d(value)
         self.requires_grad = requires_grad
         self.grad = np.zeros(np.shape(self.value))
 
         self._outgrad = lambda x, y: () 
         self._children = _children
 
-    # Operator Overloading
+
+    ### --- Operator Overloading --- ###
 
     def __neg__(self):
         return self * -1
@@ -51,7 +53,8 @@ class Tensor:
     def __rtruediv__(self, other):
         return OP("div", check(other, Tensor), self)
 
-    # Properties 
+
+    ### --- Class Methods --- ###
 
     @property
     def shape(self):
@@ -77,7 +80,8 @@ class Tensor:
     def eye(cls, dims, **kwargs):
         return cls(np.eye(dims), **kwargs)
 
-    # Custom Ops
+
+    ### --- Matrix Ops --- ###
 
     def sum(self, axis = None, keepdims = True): 
         self.axis = axis
@@ -88,23 +92,32 @@ class Tensor:
     def transpose(self): # NOT TESTED
         return OP("transpose", self)
 
-    def reshape(self, size):
-        return OP("reshape", self, size)
+    def reshape(self, new_shape):
+        self.old_shape = self.shape
+        self.new_shape = new_shape
+        return OP("reshape", self)
+
+    def dot(self, other):
+        return OP("dot", self, check(other, Tensor))
+
+    
+    # I could probably add axis param with these. 
+    ### --- Elem-Wise Ops --- ### 
+
+    def log(self):
+        return OP("log", self)
+
+    def exp(self):
+        return OP("exp", self)
+
+
+    ### --- Activation Functions --- ###
 
     def sigmoid(self):
         return OP("sigmoid", self)
 
     def relu(self):
         return OP("relu", self)
-
-    def log(self):
-        return OP("log", self)
-        
-    def dot(self, other):
-        return OP("dot", self, check(other, Tensor))
-
-    def exp(self):
-        return OP("exp", self)
 
     def softmax(self):
         return OP("softmax", self)
@@ -115,20 +128,50 @@ class Tensor:
     def tanh(self):
         return OP("tanh", self);
 
-    # Backwards
+
+    ### --- Backprop --- ###
 
     def backward(self):
+        topo = []
+        visited = set()
+    
         def recurse(tensor):
+            if tensor not in visited:
+                visited.add(tensor)
+    
+                for child in tensor._children:
+                   recurse(child)
+    
+                topo.append(tensor)
+    
+        recurse(self)
+    
+        self.grad = np.ones(np.shape(self.value)) 
+
+        for tensor in reversed(topo):
             grad = tensor._outgrad(tensor.grad, *tensor._children, tensor.value)
 
             for child, ingrad in zip(tensor._children, grad):
                 child.grad = child.grad + ingrad
 
-                recurse(child)
 
-        self.grad = np.ones(np.shape(self.value))
-
-        recurse(self)
+#    def backward(self):
+#        """
+#        It seems this doesn't quite work in one case :(  I wonder if there is
+#        something else like this in which is more computationally efficient
+#        than doing a topo sort before hand
+#        """
+#        def recurse(tensor):
+#            grad = tensor._outgrad(tensor.grad, *tensor._children, tensor.value)
+#
+#            for child, ingrad in zip(tensor._children, grad):
+#                child.grad = child.grad + ingrad
+#
+#                recurse(child)
+#
+#        self.grad = np.ones(np.shape(self.value))
+#
+#        recurse(self)
 
 
 ### ----- OP TYEPS ----- ### 
@@ -144,8 +187,6 @@ def OP(op, *tensors):
     output_tensor._outgrad = grad_fun[op]
 
     return output_tensor
-
-
 
 
 
