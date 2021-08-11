@@ -71,7 +71,9 @@ def speedtest():
     class Neuron:
         def __init__(self, loss, dims):
             self.weights = Tensor([np.random.uniform() for i in range(dims)])
+#            self.weights = Tensor.uniform(1, 1)
             self.bias = Tensor([np.random.uniform()])
+#            self.bias = Tensor.uniform(1, 1)
             self.dims = dims
             self.loss = loss
 

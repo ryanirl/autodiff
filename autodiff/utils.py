@@ -4,18 +4,16 @@ def check(x, Type):
     return x if isinstance(x, Type) else Type(x)
 
 
+def clip_stable(value):
+    EPS = 1e-6
+    return np.clip(value, EPS, 1.0 - EPS)
+
+
 def primitive(Class):
     def register_methods(method):
         setattr(Class, method.__name__, method)
         return method 
     return register_methods
-
-
-def _isscalar(tensor):
-    if (tensor.shape == 1) or (tensor.shape == (1, )) or (tensor.shape == (1, 1)):
-        return True
-    else:
-        return False
 
 
 def to_logits(pred):

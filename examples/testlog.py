@@ -52,7 +52,12 @@ model = LogisticRegression()
 
 loss_fun = nn.BinaryCrossEntropy()
 
-optimizer = nn.Adam(model.parameters(), lr = 0.01)
+# RMSProp & Adam WORKS MAGIC ON THIS JEEZ
+
+#optimizer = nn.SGD(model.parameters(), lr = 0.01, momentum = 0.9, nestrov = True)
+#optimizer = nn.AdaGrad(model.parameters(), lr = 0.01, eps = 1e-7)
+#optimizer = nn.RMSProp(model.parameters(), lr = 0.01, eps = 1e-7)
+optimizer = nn.Adam(model.parameters(), lr = 0.01, eps = 1e-7)
 
 for i in range(5000):
     optimizer.zero_grad()

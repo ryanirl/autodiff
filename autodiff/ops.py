@@ -1,6 +1,6 @@
 import numpy as np
 from collections import defaultdict
-from autodiff.utils import _unbroadcast
+from autodiff.utils import _unbroadcast, to_logits, clip_stable
 
 grad_fun = defaultdict(lambda: "ERROR")
 value_fun = defaultdict(lambda: "ERROR")
@@ -129,9 +129,24 @@ grad_fun["softmax"] = (lambda g, x, z: [softmax_backward(g, z)])
 
 
 
+def stable_binary_cross_entropy_forward(pred, actual):
+    pred = to_logits(pred)
+
+    out = 0.01 * np.sum(np.maximum(pred, 0) - (pred * actual) + np.log(1.0 + np.exp(-np.abs(pred))))
+
+    return out 
+
+
+value_fun["stable_binary_cross_entropy_loss"] = (lambda x, y: stable_binary_cross_entropy_forward(x.value, y.value))
+grad_fun["stable_binary_cross_entropy_loss"] = (lambda g, pred, actual, z: (g * ((1.0 / (1.0 + np.exp(-to_logits(pred.value)))) - actual.value), ))
 
 
 
+
+
+value_fun["categorical_cross_entropy_loss"] = (lambda pred, actual: -np.sum(actual.value * np.log(clip_stable(pred.value)), axis = 1, keepdims = True))
+
+grad_fun["categorical_cross_entropy_loss"] = (lambda g, pred, actual, z: ((-actual.value / (pred.value + 1e-6)), ))
 
 
 

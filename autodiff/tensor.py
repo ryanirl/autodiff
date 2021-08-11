@@ -2,7 +2,7 @@
 
 import numpy as np
 from autodiff.ops import grad_fun, value_fun
-from autodiff.utils import check, _isscalar
+from autodiff.utils import check
 
 
 class Tensor:
@@ -128,6 +128,14 @@ class Tensor:
     def tanh(self):
         return OP("tanh", self);
 
+
+    ### --- Loss Functions --- ###
+
+    def stable_binary_cross_entropy_loss(self, actual):
+        return OP("stable_binary_cross_entropy_loss", self, actual);
+
+    def categorical_cross_entropy_loss(self, actual):
+        return OP("categorical_cross_entropy_loss", self, actual);
 
     ### --- Backprop --- ###
 
