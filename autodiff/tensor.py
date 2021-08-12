@@ -120,6 +120,12 @@ class Tensor:
     def exp(self):
         return OP("exp", self)
 
+    def abs(self):
+        return OP("abs", self)
+
+    def max(self):
+        return OP("max", self)
+
 
     ### --- Activation Functions --- ###
 
@@ -137,6 +143,14 @@ class Tensor:
 
     def tanh(self):
         return OP("tanh", self)
+
+    # I optimized this because tensor_softmax 
+    # is expensive so use softmax instead
+    def tensor_softmax(self):
+        a = (self - self.max()).exp()
+        b = a.sum(axis = 1, keepdims = True)
+
+        return a / b
 
 
     ### --- Loss Functions --- ###
