@@ -1,4 +1,4 @@
-# This example was taken from Andrej Karpathy's micrograd moon_demo which can
+# This example was inspired by Andrej Karpathy's micrograd moon_demo which can
 # be found here: https://github.com/karpathy/micrograd/blob/master/demo.ipynb
 # His project was an initial inspiration for mine and I wanted to see how my
 # implimentation would hold up against this.
