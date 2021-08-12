@@ -56,11 +56,18 @@ neural nets.
  - Categorical Cross Entropy (In the process of testing)
 
 
+**Optimizers:**
+ - SGD w/ Momentum
+ - AdaGrad
+ - RMSProp
+ - Adam
+
+
 ---
+
 
 <!-- TODO -->
 ### TODO:
- - Optimizations: Adam, Momentum, RMSProp (optim.py)
  - Loss Functions: Hinge, MAE, ...
  - Convolutions :)
 

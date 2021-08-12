@@ -50,6 +50,9 @@ for i in range(10000):
 
     optimizer.step()
 
+    X_train.grad = 0
+    y_train.grad = 0
+
 
 ######################
 
@@ -79,8 +82,14 @@ for i in range(len(preds)):
 
 # When testing on my own the worst I got 35 correct and 3 incorrect.
 # The best being 100% corrrect 
-print("Amount predicted correctly: {}".format(correct))
-print("Amount predicted in-correctly: {}".format(incorrect))
+print()
+print("Test Data: ")
+print("---------------------------------------")
+print("Amount predicted correctly:    | {} ".format(correct))
+print("---------------------------------------")
+print("Amount predicted in-correctly: | {}".format(incorrect))
+print("---------------------------------------")
+print()
 
 #########################################
 
