@@ -126,16 +126,19 @@ class Tensor:
         return OP("leaky_relu", self)
 
     def tanh(self):
-        return OP("tanh", self);
+        return OP("tanh", self)
 
 
     ### --- Loss Functions --- ###
 
     def stable_binary_cross_entropy_loss(self, actual):
-        return OP("stable_binary_cross_entropy_loss", self, actual);
+        return OP("stable_binary_cross_entropy_loss", self, actual)
 
     def categorical_cross_entropy_loss(self, actual):
-        return OP("categorical_cross_entropy_loss", self, actual);
+        return OP("categorical_cross_entropy_loss", self, actual)
+
+    def sigmoid_binary_cross_entropy(self, actual):
+        return OP("sigmoid_binary_cross_entropy", self, actual)
 
     ### --- Backprop --- ###
 

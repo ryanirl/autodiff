@@ -138,6 +138,7 @@ def stable_binary_cross_entropy_forward(pred, actual):
 
 
 value_fun["stable_binary_cross_entropy_loss"] = (lambda x, y: stable_binary_cross_entropy_forward(x.value, y.value))
+
 grad_fun["stable_binary_cross_entropy_loss"] = (lambda g, pred, actual, z: (g * ((1.0 / (1.0 + np.exp(-to_logits(pred.value)))) - actual.value), ))
 
 
@@ -152,11 +153,10 @@ grad_fun["categorical_cross_entropy_loss"] = (lambda g, pred, actual, z: ((-actu
 
 
 
+value_fun["sigmoid_binary_cross_entropy"] = (lambda pred, actual: (1.0 / pred.shape[0]) * np.sum(
+                                             np.maximum(pred.value, 0) - (pred.value * actual.value) + np.log(1.0 + np.exp(-np.abs(pred.value)))))
 
-
-
-
-
+grad_fun["sigmoid_binary_cross_entropy"] = (lambda g, pred, actual, z: (g * ((1.0 / (1.0 + np.exp(-pred.value))) - actual.value), ))
 
 
 

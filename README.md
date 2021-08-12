@@ -40,6 +40,7 @@ neural nets.
 **Layers:**
  - Linear
  - Sequential
+ - Activation Layers
 
 
 **Activation Functions:**
@@ -52,8 +53,9 @@ neural nets.
 
 **Loss Functions:**
  - MSE 
- - Stable Binary Cross Entropy (Logits)
- - Categorical Cross Entropy (In the process of testing)
+ - Binary Cross Entropy (Logits)
+ - Categorical Cross Entropy 
+ - Sigmoid Binary Cross Entropy (Sigmoid + Binary CE)
 
 
 **Optimizers:**
@@ -68,11 +70,15 @@ neural nets.
 
 <!-- TODO -->
 ### TODO:
- - Loss Functions: Hinge, MAE, ...
- - Convolutions :)
-
-#### Might consider adding in the future:
- - Hardware Acceleration 
+ - Primitive Functions: Max, Abs
+ - Loss Functions: Hinge, MAE, Softmax-CCE
+ - Layers: Pooling, Padding, Convolutions, Batch Normalization, Dropout, etc.
+ - Utils: One-Hot for CCE-Loss, Split for Test/Train (Tensors), Pre-Defined Datasets
+ - Grad Check
+ - Hardware Acceleration?
+ - Normalization (nn)
+ - Lots of Examples
+ - Lots of Documentation
 
 
 ---
