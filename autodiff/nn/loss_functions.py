@@ -57,6 +57,17 @@ class CategoricalCrossEntropy:
 
 
 
+class SoftmaxCategoricalCrossEntropy:
+    def __call__(self, pred, actual):
+        self.pred = pred
+
+        return self.pred.softmax_categorical_cross_entropy(actual)
+
+    def backward(self):
+        return self.pred.backward()
+
+
+
 class MSE:
     def __call__(self, pred, actual):
         return 0.5 * ((pred - actual) ** 2)
@@ -68,9 +79,6 @@ class MSE:
 
 ####### -------------- HINGE LOSS --------------  ########
 ##########################################################
-
-####### -------------- Softmax Categorical Cross Entropy Bypass --------------  ########
-########################################################################################
 
 
 

@@ -54,11 +54,18 @@ class Tensor:
         return OP("div", check(other, Tensor), self)
 
 
-    ### --- Class Methods --- ###
+    ### --- Properties --- ###
 
     @property
     def shape(self):
         return self.value.shape
+
+    @property
+    def T(self):
+        return OP("transpose", self)
+
+
+    ### --- Class Methods --- ###
 
     @classmethod
     def zeros(cls, *shape, **kwargs):
@@ -80,6 +87,10 @@ class Tensor:
     def eye(cls, dims, **kwargs):
         return cls(np.eye(dims), **kwargs)
 
+    @classmethod
+    def diag(cls, x, k = 0, **kwargs):
+        return cls(np.diag(x, k), **kwargs)
+
 
     ### --- Matrix Ops --- ###
 
@@ -89,7 +100,7 @@ class Tensor:
         self.keepdims = keepdims
         return OP("sum", self)
 
-    def transpose(self): # NOT TESTED
+    def transpose(self): 
         return OP("transpose", self)
 
     def reshape(self, new_shape):
@@ -101,7 +112,6 @@ class Tensor:
         return OP("dot", self, check(other, Tensor))
 
     
-    # I could probably add axis param with these. 
     ### --- Elem-Wise Ops --- ### 
 
     def log(self):
@@ -140,6 +150,9 @@ class Tensor:
     def sigmoid_binary_cross_entropy(self, actual):
         return OP("sigmoid_binary_cross_entropy", self, actual)
 
+    def softmax_categorical_cross_entropy(self, actual):
+        return OP("softmax_categorical_cross_entropy", self, actual)
+
     ### --- Backprop --- ###
 
     def backward(self):
@@ -165,24 +178,6 @@ class Tensor:
             for child, ingrad in zip(tensor._children, grad):
                 child.grad = child.grad + ingrad
 
-
-#    def backward(self):
-#        """
-#        It seems this doesn't quite work in one case :(  I wonder if there is
-#        something else like this in which is more computationally efficient
-#        than doing a topo sort before hand
-#        """
-#        def recurse(tensor):
-#            grad = tensor._outgrad(tensor.grad, *tensor._children, tensor.value)
-#
-#            for child, ingrad in zip(tensor._children, grad):
-#                child.grad = child.grad + ingrad
-#
-#                recurse(child)
-#
-#        self.grad = np.ones(np.shape(self.value))
-#
-#        recurse(self)
 
 
 ### ----- OP TYEPS ----- ### 

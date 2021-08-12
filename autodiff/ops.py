@@ -160,3 +160,11 @@ grad_fun["sigmoid_binary_cross_entropy"] = (lambda g, pred, actual, z: (g * ((1.
 
 
 
+
+
+# These assume one-hot ecoded data
+value_fun["softmax_categorical_cross_entropy"] = (lambda pred, actual: -np.sum(actual.value * np.log(clip_stable(softmax_forward(pred.value))), axis = 1, keepdims = True))
+
+grad_fun["softmax_categorical_cross_entropy"] = (lambda g, pred, actual, z: [g * (softmax_forward(pred.value) - actual.value), ])
+
+
