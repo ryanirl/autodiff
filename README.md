@@ -142,7 +142,7 @@ print("grad wrt B: ({})".format(b.grad))
 Bulding an MLP to do multiclass Softmax classification is as simple as this:
 This example in full detail can be found here: https://github.com/ryanirl/autodiff/blob/main/examples/spiral_classification.py
 
-```
+```python
 # Instantiating the Model
 model = nn.Sequential(
     nn.Linear(2, 100),
@@ -181,7 +181,7 @@ Plotting the decision boundry gives:
 
 
 <p align="center">
- <img src="./img/spiral_classification_img.png" width="85%">
+ <img src="./img/spiral_classification_img.png" width="90%">
 </p>
 
 
