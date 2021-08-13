@@ -8,7 +8,6 @@
 
 -------
 
-**AutoDiff is intended for educational purposes only.**
 
 **WORK IN PROGRESS*
 
@@ -86,13 +85,13 @@ Table of Contents
 
 <!-- TODO -->
 ### TODO:
- - Primitive Functions: Max, Abs
- - Loss Functions: Hinge, MAE, Softmax-CCE
+ - Primitive Functions: aMax
+ - Loss Functions: Hinge, MAE
  - Layers: Pooling, Padding, Convolutions, Batch Normalization, Dropout, etc.
  - Utils: One-Hot for CCE-Loss, Split for Test/Train (Tensors), Pre-Defined Datasets
  - Grad Check
  - Hardware Acceleration?
- - Normalization (nn)
+ - Normalization (L1 & L2)
  - Lots of Examples
  - Lots of Documentation
 
@@ -164,8 +163,6 @@ for i in range(1000):
     out = model.forward(X)
 
     loss = loss_fun(out, y)
-
-    if i % 50 == 0: print("loss at {} is: {}".format(i, np.sum(loss.value) / 300))
 
     loss.backward()
 

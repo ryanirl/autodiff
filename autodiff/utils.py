@@ -76,7 +76,7 @@ def _unbroadcast(grad, to_shape):
 # NO LONGER NEEDED 
 #def softmax_backward_helper(ingrad, forward_out):
 #    """
-#    This code is NOT my own writting. 
+#    Some snipits of this code were taken from these reources below:
 #
 #    For the jacobian of Softmax this resource really helped:
 #    https://stats.stackexchange.com/questions/235528/backpropagation-with-softmax-cross-entropy

@@ -2,34 +2,10 @@
 
 ## WORK IN PROGESS, PROBABLY DON'T READ THIS
 
----
-
-Plan:
- - Motivation for AutoDiff (add link to tensorflow and pytorch)
- - How AutoDiff works: Reverse-Mode / Computation Graph / etc.
- - How to define Primitive OPS
 
 ---
 
-### Motivation for AutoDiff
-
-Why spend hours computing the gradients for backprop when you can just automate
-it with AutoDiff :)
-
-AutoDiff's goal is to be an *extremely* intuitive and lightweight automatic
-differentiation libary (though I made add hardware acceleration in the future)
-built for educational use. 
-
----
-
-### AutoDiff Basics
-
-HAVEN'T WORKED ON YET
-
-
----
-
-### How to Define Primitive Ops
+### How to Define Custom Primitive Ops
 
 When writing your own primitive ops you need to know 3 things:
 

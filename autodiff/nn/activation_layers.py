@@ -16,7 +16,5 @@ class LeakyReLU(Module):
 class Tanh(Module):
     def __call__(self, X): return X.tanh()
 
-class Sigmoid(Module):
-    def __call__(self, X): return X.sigmoid()
 
 
