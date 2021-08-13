@@ -1,11 +1,13 @@
 from autodiff.tensor import Tensor
 
+
 class Module:
     def __init__(self):
         self.params = []
 
     def parameters(self):
         return self.params
+
 
 class Sequential(Module):
     def __init__(self, *layers): 
@@ -20,3 +22,6 @@ class Sequential(Module):
             X = layer(X)
 
         return X
+    
+        
+    def forward(self, X): return self.__call__(X)

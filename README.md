@@ -40,6 +40,10 @@ Table of Contents
    * [TODO](#todo)
    * [Installation](#installation)
    * [Usage](#usage)
+        * Basic Usage
+        * Building Simple MLP
+        * User Defined Primitives
+
    * [Liscence](#liscence)
 
 
@@ -135,11 +139,66 @@ print("grad wrt B: ({})".format(b.grad))
 
 ---
 
-I plan on simplifying this but right now you can even define your own primitive
-functions. An example of a user defined primitive function may be: 
+Bulding an MLP to do multiclass Softmax classification is as simple as this:
+This example in full detail can be found here: https://github.com/ryanirl/autodiff/blob/main/examples/spiral_classification.py
 
-**Note #1:** To better understand this code and how works and how to add your own
-primitive operators, I will be working on a guide soon. 
+```
+# Instantiating the Model
+model = nn.Sequential(
+    nn.Linear(2, 100),
+    nn.ReLU(),
+    nn.Linear(100, 3),
+    nn.Softmax()
+)
+
+# Defining the Loss
+loss_fun = nn.CategoricalCrossEntropy()
+
+# Defining the Optimizer
+optimizer = nn.Adam(model.parameters())
+
+# Training
+for i in range(1000):
+    optimizer.zero_grad()
+
+    out = model.forward(X)
+
+    loss = loss_fun(out, y)
+
+    if i % 50 == 0: print("loss at {} is: {}".format(i, np.sum(loss.value) / 300))
+
+    loss.backward()
+
+    optimizer.step()
+
+    X.grad = 0 # Required if X is Tensor
+    y.grad = 0 # Required if y is Tensor
+
+
+```
+
+Plotting the decision boundry gives: 
+
+
+<p align="center">
+ <img src="./img/spiral_classification_img.png" width="85%">
+</p>
+
+
+
+<br />
+
+
+---
+
+
+You can even define your own primitive functions. An example of a user defined
+primitive function may be: 
+
+
+**Note #1:** I will be working on a guide sooon to better explain this code and
+how it works to add your own primitive operators.
+
 
 ```python
 

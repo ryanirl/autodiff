@@ -1,6 +1,6 @@
 import numpy as np
 from collections import defaultdict
-from autodiff.utils import _unbroadcast, to_logits, clip_stable, softmax_backward_helper
+from autodiff.utils import _unbroadcast, to_logits, clip_stable
 
 grad_fun = defaultdict(lambda: "ERROR")
 value_fun = defaultdict(lambda: "ERROR")
@@ -27,7 +27,6 @@ value_fun["pow"] = (lambda x, y: x.value ** y.value)
 # I re-wrote div in terms of exponentiation TEMP
 value_fun["div"] = (lambda x, y: x.value / y.value)
 grad_fun["div"] = (lambda g, x, y, z: (_unbroadcast(g * (1.0 / y.value), x.shape), _unbroadcast(g * (-x.value / (y.value ** 2)), y.shape)))
-
 
 
 ### --- Activation Function Ops --- ###
@@ -96,8 +95,11 @@ value_fun["max"] = (lambda x: np.max(x.value))
 def optimize_softmax(x): a = np.exp(x.value - np.max(x.value)); return a / np.sum(a, axis = 1, keepdims = True)
 
 value_fun["softmax"] = (lambda x: optimize_softmax(x))
-grad_fun["softmax"] = (lambda g, x, z: [softmax_backward_helper(g, z)])
+grad_fun["softmax"] = (lambda g, x, z: [(g * z) - (np.einsum('ijk,ik->ij', z[..., None] * z[:, None, :], g))])
+
 #value_fun["softmax"] = (lambda x: np.exp(x.value - np.max(x.value)) / np.sum(np.exp(x.value - np.max(x.value)), axis = 1, keepdims = True))
+#grad_fun["softmax"] = (lambda g, x, z: [softmax_backward_helper(g, z)])
+
 
 
 
