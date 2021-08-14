@@ -4,6 +4,7 @@ storage.py
 benchmark.py
 bias.py
 custom_log.py
+reduce_time.py
 
 # Created by https://www.toptal.com/developers/gitignore/api/macos,jupyternotebooks,python
 # Edit at https://www.toptal.com/developers/gitignore?templates=macos,jupyternotebooks,python

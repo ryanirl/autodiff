@@ -168,7 +168,6 @@ class Tensor:
         return OP("softmax_categorical_cross_entropy", self, actual)
 
     ### --- Backprop --- ###
-
     def backward(self):
         topo = []
         visited = set()
@@ -180,13 +179,15 @@ class Tensor:
                 for child in tensor._children:
                    recurse(child)
     
-                topo.append(tensor)
+#                topo.append(tensor)
+                topo.insert(0, tensor)
     
         recurse(self)
-    
+
         self.grad = np.ones(np.shape(self.value)) 
 
-        for tensor in reversed(topo):
+#        for tensor in reversed(topo):
+        for tensor in topo:
             grad = tensor._outgrad(tensor.grad, *tensor._children, tensor.value)
 
             for child, ingrad in zip(tensor._children, grad):

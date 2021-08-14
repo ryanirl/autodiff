@@ -73,40 +73,6 @@ def _unbroadcast(grad, to_shape):
 
 
 
-# NO LONGER NEEDED 
-#def softmax_backward_helper(ingrad, forward_out):
-#    """
-#    Some snipits of this code were taken from these reources below:
-#
-#    For the jacobian of Softmax this resource really helped:
-#    https://stats.stackexchange.com/questions/235528/backpropagation-with-softmax-cross-entropy
-#
-#    The following articles helped me put together this implementation.
-#    https://stackoverflow.com/questions/36279904/softmax-derivative-in-numpy-approaches-0-implementation
-#    https://themaverickmeerkat.com/2019-10-23-Softmax/
-#
-#    For some intuitive understanding of softmax I recommend this lecture 
-#    from Standfords CS321n Class: (Softmax around 37:00 in the video)
-#    https://www.youtube.com/watch?v=h7iBpEHGVNc&t=3032s
-#    
-#    """
-#
-#    # Doing some research I was able to come up with this short hand
-#    a = forward_out[..., None] * forward_out[:, None, :] 
-#
-#    # NEED TO FIGURE OUT A SHORTAHND FOR THIS
-#    sub = ingrad * forward_out
-#
-#    # This seems to be about 10% quicker
-#    b = np.einsum('ijk,ik->ij', a, ingrad)  
-##    b = (a * ingrad[..., None]).sum(axis = 1)
-#
-#    return sub - b
-
-
-
-
-
 
 
 
