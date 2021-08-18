@@ -1,19 +1,27 @@
 import numpy as np
+from numpy.lib.stride_tricks import as_strided
 
+try:
+    from autodiff.cython_col2im import col2im_6d_cython
+except:
+    pass
+
+### --- Tensor Utils --- ###
 def check(x, Type): 
     return x if isinstance(x, Type) else Type(x)
-
-
-def clip_stable(value):
-    EPS = 1e-6
-    return np.clip(value, EPS, 1.0 - EPS)
 
 
 def primitive(Class):
     def register_methods(method):
         setattr(Class, method.__name__, method)
         return method 
-    return register_methods
+    return register_methods 
+
+### --- Numerically Stable Utils --- ###
+
+def clip_stable(value):
+    EPS = 1e-6
+    return np.clip(value, EPS, 1.0 - EPS)
 
 
 def to_logits(pred):
@@ -25,6 +33,8 @@ def to_logits(pred):
 
     return logits
 
+
+### --- Broadcasting Utils --- ###
 
 def unbroadcast_axes(shape_in, shape_out):
     """
@@ -72,7 +82,55 @@ def _unbroadcast(grad, to_shape):
     return np.reshape(np.sum(grad, axis = sum_axes, keepdims = True), to_shape)
 
 
+### --- Convolution Utils --- ###
 
+# '_con2d_forward' and '_conv2d_backward' are from cs231n's fast_layers.py  
+# https://cs231n.github.io/assignments2021/assignment2/
+def _conv2d_forward(x, weights):
+    N, C, H, W = x.shape
+    F, _, FH, FW = weights.shape
+    stride, pad = x.stride, x.padding 
+
+    x_padded = np.pad(x.value, ((0, 0), (0, 0), (pad, pad), (pad, pad)), mode = "constant")
+
+    H = H + (2 * pad)
+    W = W + (2 * pad)
+
+    out_h = int((H - FH) / stride) + 1
+    out_w = int((W - FW) / stride) + 1
+
+    shape = (C, FH, FW, N, out_h, out_w)
+
+    strides = x.value.itemsize * np.array((H * W, W, 1, C * H * W, stride * W, stride))
+
+    im2col = np.ascontiguousarray(as_strided(x_padded, shape = shape, strides = strides))
+
+    im2col.shape = (C * FH * FW, N * out_h * out_w) 
+
+    x.cached_im2col = im2col
+
+    out = weights.reshape(F, -1).dot(im2col)
+
+    out.shape = (F, N, out_h, out_w)
+
+    return np.ascontiguousarray(out.transpose(1, 0, 2, 3)) 
+
+def _conv2d_backward(ingrad, x, weights, z):
+    N, C, H, W = x.shape
+    F, _, FH, FW = weights.shape
+    stride, pad = x.stride, x.padding 
+    _, _, out_h, out_w = ingrad.shape
+
+    ingrad = ingrad.transpose(1, 0, 2, 3).reshape(F, -1)
+
+    dw = ingrad.dot(x.cached_im2col.T).reshape(weights.shape)
+
+    dx_im2col = weights.value.reshape(F, -1).T.dot(ingrad)
+    dx_im2col.shape = (C, FH, FW, N, out_h, out_w)
+
+    dx = col2im_6d_cython(dx_im2col, N, C, H, W, FH, FW, pad, stride)
+
+    return [dx, dw]
 
 
 

@@ -56,6 +56,7 @@ Table of Contents
  - Linear
  - Sequential
  - Activation Layers
+ - Convolutions *NEED TO TEST*
 
 
 **Activation Functions:**
@@ -87,7 +88,7 @@ Table of Contents
 ### TODO:
  - Primitive Functions: aMax
  - Loss Functions: Hinge, MAE
- - Layers: Pooling, Padding, Convolutions, Batch Normalization, Dropout, etc.
+ - Layers: Pooling, Batch Normalization, Dropout, etc.
  - Utils: One-Hot for CCE-Loss, Split for Test/Train (Tensors), Pre-Defined Datasets
  - Grad Check
  - Hardware Acceleration?
@@ -103,6 +104,10 @@ Table of Contents
 
 At the moment just gonna have to clone the repo and make sure you have numpy
 installed which is it's only dependency.
+
+Though if you want to use convolutions, the backwards pass of Conv2D uses cython,
+so you'll have to build the cython before using. This will probably change in the
+future once I find how to do col2im effeciently without using cython. 
 
 Not tested on Python2.
 

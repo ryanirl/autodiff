@@ -153,6 +153,16 @@ class Tensor:
         return a / b
 
 
+    ### --- Convolutions --- ###
+
+    def conv2d(self, weight, stride, padding):
+        self.stride = stride
+        self.padding = padding
+        self.cached_im2col = None
+
+        return OP("conv2d", self, check(weight, Tensor))
+
+
     ### --- Loss Functions --- ###
 
     def stable_binary_cross_entropy_loss(self, actual):
@@ -179,14 +189,12 @@ class Tensor:
                 for child in tensor._children:
                    recurse(child)
     
-#                topo.append(tensor)
                 topo.insert(0, tensor)
     
         recurse(self)
 
         self.grad = np.ones(np.shape(self.value)) 
 
-#        for tensor in reversed(topo):
         for tensor in topo:
             grad = tensor._outgrad(tensor.grad, *tensor._children, tensor.value)
 

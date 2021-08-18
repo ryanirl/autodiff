@@ -18,6 +18,7 @@ reduce_time.py
 original.jpg
 paris.jpg
 
+conv_tensor_test.py
 conv_test.py
 im2col.py
 
