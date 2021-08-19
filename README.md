@@ -105,10 +105,6 @@ Table of Contents
 At the moment just gonna have to clone the repo and make sure you have numpy
 installed which is it's only dependency.
 
-Though if you want to use convolutions, the backwards pass of Conv2D uses cython,
-so you'll have to build the cython before using. This will probably change in the
-future once I find how to do col2im effeciently without using cython. 
-
 Not tested on Python2.
 
 ---

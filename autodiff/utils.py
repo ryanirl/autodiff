@@ -1,11 +1,6 @@
 import numpy as np
 from numpy.lib.stride_tricks import as_strided
 
-try:
-    from autodiff.cython_col2im import col2im_6d_cython
-except:
-    pass
-
 ### --- Tensor Utils --- ###
 def check(x, Type): 
     return x if isinstance(x, Type) else Type(x)
@@ -84,8 +79,41 @@ def _unbroadcast(grad, to_shape):
 
 ### --- Convolution Utils --- ###
 
-# '_con2d_forward' and '_conv2d_backward' are from cs231n's fast_layers.py  
+# '_con2d_forward', '_conv2d_backward', and 'col2im' are slightly worked around
+# version from cs231n's fast_layers.py which can be found here:
 # https://cs231n.github.io/assignments2021/assignment2/
+def col2im(cols, x_shape, filter_height = 3, filter_width = 3, padding = 1, stride = 1):
+    N, C, H, W = x_shape
+
+    out_h = int((H + 2 * padding - filter_height) / stride) + 1
+    out_w = int((W + 2 * padding - filter_width) / stride) + 1
+
+    H_padded, W_padded = H + 2 * padding, W + 2 * padding
+
+    x_padded = np.zeros((N, C, H_padded, W_padded), dtype=cols.dtype)
+
+    i0 = np.tile(np.repeat(np.arange(filter_height), filter_width), C)
+    i1 = stride * np.repeat(np.arange(out_h), out_w)
+
+    j0 = np.tile(np.arange(filter_width), filter_height * C)
+    j1 = stride * np.tile(np.arange(out_w), out_h)
+
+    i = i0.reshape(-1, 1) + i1.reshape(1, -1)
+    j = j0.reshape(-1, 1) + j1.reshape(1, -1)
+
+    k = np.repeat(np.arange(C), filter_height * filter_width).reshape(-1, 1)
+
+    cols_reshaped = cols.reshape(C * filter_height * filter_width, -1, N)
+
+    cols_reshaped = cols_reshaped.transpose(2, 0, 1)
+
+    # This is what takes the most time and what I will be looking to optimize
+    np.add.at(x_padded, (slice(None), k, i, j), cols_reshaped) 
+
+    if padding == 0: return x_padded
+    return x_padded[:, :, padding : -padding, padding : -padding]
+
+
 def _conv2d_forward(x, weights):
     N, C, H, W = x.shape
     F, _, FH, FW = weights.shape
@@ -115,6 +143,7 @@ def _conv2d_forward(x, weights):
 
     return np.ascontiguousarray(out.transpose(1, 0, 2, 3)) 
 
+
 def _conv2d_backward(ingrad, x, weights, z):
     N, C, H, W = x.shape
     F, _, FH, FW = weights.shape
@@ -128,7 +157,7 @@ def _conv2d_backward(ingrad, x, weights, z):
     dx_im2col = weights.value.reshape(F, -1).T.dot(ingrad)
     dx_im2col.shape = (C, FH, FW, N, out_h, out_w)
 
-    dx = col2im_6d_cython(dx_im2col, N, C, H, W, FH, FW, pad, stride)
+    dx = col2im(dx_im2col, (N, C, H, W), FH, FW, pad, stride)
 
     return [dx, dw]
 
