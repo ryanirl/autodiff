@@ -52,33 +52,16 @@ Table of Contents
 <!-- Currently Supported -->
 ### Currently Supported NN Features:
 
-**Layers:**
- - Linear
- - Sequential
- - Activation Layers
- - Convolutions *NEED TO TEST*
+**Layers:** Linear, Sequential, Activation Layers, Convolutions
 
 
-**Activation Functions:**
- - ReLU
- - Leaky ReLU
- - Sigmoid
- - Softmax
- - TanH
+**Activation Functions:** ReLU, Leaky_ReLU, Sigmoid, Softmax, TanH
 
 
-**Loss Functions:**
- - MSE 
- - Binary Cross Entropy (Logits)
- - Categorical Cross Entropy 
- - Sigmoid Binary Cross Entropy (Sigmoid + Binary CE)
+**Loss Functions:** MSE, BinaryCE, CategoricalBE, Sigmoid & Softmax w/CE
 
 
-**Optimizers:**
- - SGD w/ Momentum
- - AdaGrad
- - RMSProp
- - Adam
+**Optimizers:** SGD w/ Momentum, AdaGrad, RMSProp, Adam
 
 
 ---

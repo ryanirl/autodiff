@@ -8,7 +8,7 @@ def check(x, Type):
 
 def primitive(Class):
     def register_methods(method):
-        setattr(Class, method.__name__, method)
+        setattr(Class, method.__name__, method) 
         return method 
     return register_methods 
 
@@ -79,10 +79,10 @@ def _unbroadcast(grad, to_shape):
 
 ### --- Convolution Utils --- ###
 
-# '_con2d_forward', '_conv2d_backward', and 'col2im' are slightly worked around
-# version from cs231n's fast_layers.py which can be found here:
+# 'col2im_numpy', '_conv2d_forward', and '_conv2d_backward' is a very lightly
+# modified version from cs231n's fast_layers.py which can be found here:
 # https://cs231n.github.io/assignments2021/assignment2/
-def col2im(cols, x_shape, filter_height = 3, filter_width = 3, padding = 1, stride = 1):
+def col2im_numpy(cols, x_shape, filter_height = 3, filter_width = 3, padding = 1, stride = 1):
     N, C, H, W = x_shape
 
     out_h = int((H + 2 * padding - filter_height) / stride) + 1
@@ -91,6 +91,7 @@ def col2im(cols, x_shape, filter_height = 3, filter_width = 3, padding = 1, stri
     H_padded, W_padded = H + 2 * padding, W + 2 * padding
 
     x_padded = np.zeros((N, C, H_padded, W_padded), dtype=cols.dtype)
+
 
     i0 = np.tile(np.repeat(np.arange(filter_height), filter_width), C)
     i1 = stride * np.repeat(np.arange(out_h), out_w)
@@ -112,7 +113,6 @@ def col2im(cols, x_shape, filter_height = 3, filter_width = 3, padding = 1, stri
 
     if padding == 0: return x_padded
     return x_padded[:, :, padding : -padding, padding : -padding]
-
 
 def _conv2d_forward(x, weights):
     N, C, H, W = x.shape
@@ -157,7 +157,8 @@ def _conv2d_backward(ingrad, x, weights, z):
     dx_im2col = weights.value.reshape(F, -1).T.dot(ingrad)
     dx_im2col.shape = (C, FH, FW, N, out_h, out_w)
 
-    dx = col2im(dx_im2col, (N, C, H, W), FH, FW, pad, stride)
+#    dx = col2im(dx_im2col, (N, C, H, W), FH, FW, pad, stride)
+    dx = col2im_numpy(dx_im2col, (N, C, H, W), FH, FW, pad, stride)
 
     return [dx, dw]
 

@@ -114,9 +114,16 @@ value_fun["softmax_categorical_cross_entropy"] = (lambda pred, actual: -np.sum(a
 grad_fun["softmax_categorical_cross_entropy"] = (lambda g, pred, actual, z: [g * (softmax_forward(pred.value) - actual.value), ])
 
 
-
-
+### --- Convolution Ops --- ### 
 
 value_fun["conv2d"] = (lambda x, weights: _conv2d_forward(x, weights.value))
 grad_fun["conv2d"] = (lambda g, x, weights, z: _conv2d_backward(g, x, weights, z))
+
+
+#value_fun["pool2d"] = (lambda x: x)
+#grad_fun["pool2d"] = (lambda g, x, z: g)
+
+
+
+
 

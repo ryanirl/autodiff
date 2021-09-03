@@ -162,6 +162,10 @@ class Tensor:
 
         return OP("conv2d", self, check(weight, Tensor))
 
+#    def pool2d(self, pool_stride, pool_filter_size):
+#        self.pool_stride = pool_stride
+#        self.pool_filter_size = pool_filter_size
+
 
     ### --- Loss Functions --- ###
 

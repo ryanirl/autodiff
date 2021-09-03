@@ -3,8 +3,9 @@ from autodiff.nn.containers import Module
 import numpy as np
 
 
-# Do I split padding into it's own layer
-# or keep it built into Conv2D???
+# Though implimented through Conv2D 
+# I would like to make this it's own
+# layer as well.
 class ZeroPad1D:
     pass
 

@@ -26,14 +26,14 @@ class Conv2D:
         self.use_bias = bias
         if self.use_bias: self.bias = Tensor.uniform(filters)
 
-        self.weights = Tensor.uniform(filters, channels, kernel_size, kernel_size)
-
 
     def __call__(self, x):
         """
         For now 'x' must be a tensor of size: (N, channels, height, width)
 
         """
+        self.x = x
+
         if self.use_bias: return x.conv2d(self.weights, self.stride, self.padding) + self.bias
         else: return x.conv2d(self.weights, self.stride, self.padding)
 

@@ -1,26 +1,7 @@
-personal_tests.py
-test.py
 storage.py
-benchmark.py
 bias.py
-custom_log.py
-reduce_time.py
-
-
-
-
-# Rangom images & Conv Scratch Work:
-2DConvolved.jpg
-2DConvolved1.jpg
-2DConvolved2.jpg
-2DConvolved3.jpg
-2DConvolved4.jpg
-original.jpg
 paris.jpg
-
-conv_tensor_test.py
 conv_test.py
-im2col.py
 
 # Created by https://www.toptal.com/developers/gitignore/api/macos,jupyternotebooks,python
 # Edit at https://www.toptal.com/developers/gitignore?templates=macos,jupyternotebooks,python
