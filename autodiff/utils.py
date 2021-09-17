@@ -1,6 +1,7 @@
 import numpy as np
 from numpy.lib.stride_tricks import as_strided
 
+
 ### --- Tensor Utils --- ###
 
 def check(x, Type): 
@@ -73,10 +74,17 @@ def unbroadcast_axes(shape_in, shape_out):
     return tuple(reduction_axes)
 
 
-def _unbroadcast(grad, to_shape):
-    sum_axes = unbroadcast_axes(np.shape(grad), to_shape)
+def _unbroadcast(grad, tensor):
+    if tensor._broadcasted: return np.reshape(np.sum(grad, axis = tensor._broadcast_axis, keepdims = True), tensor.shape)
+    else: 
+        to_shape = tensor.shape
 
-    return np.reshape(np.sum(grad, axis = sum_axes, keepdims = True), to_shape)
+        sum_axes = unbroadcast_axes(np.shape(grad), to_shape)
+
+        tensor._broadcast_axis = sum_axes
+        tensor._broadcasted = True
+
+        return np.reshape(np.sum(grad, axis = sum_axes, keepdims = True), to_shape)
 
 
 ### --- Convolution Utils --- ###

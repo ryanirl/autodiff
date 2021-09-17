@@ -26,7 +26,7 @@ model = nn.Sequential(
     nn.Linear(16, 1)
 )
 
-optimizer = nn.Adam(model.parameters())
+optimizer = nn.Adam(model.parameters(), lr = 0.001)
 loss_fun = nn.SigmoidBinaryCrossEntropy()
 
 out = model.forward(X) 

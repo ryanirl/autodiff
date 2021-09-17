@@ -10,23 +10,23 @@ value_fun = defaultdict(lambda: "ERROR")
 
 #grad_fun["add"] = (lambda g, x, y, z: (g, g))
 value_fun["add"] = (lambda x, y: x.value + y.value)
-grad_fun["add"] = (lambda g, x, y, z: [_unbroadcast(g, x.shape), _unbroadcast(g, y.shape)])
+grad_fun["add"] = (lambda g, x, y, z: [_unbroadcast(g, x), _unbroadcast(g, y)])
 
 grad_fun["sub"] = (lambda g, x, y, z: [g, -g])
 value_fun["sub"] = (lambda x, y: x.value - y.value)
 
 #grad_fun["mul"] = (lambda g, x, y, z: (g * y.value, g * x.value))
-grad_fun["mul"] = (lambda g, x, y, z: [_unbroadcast(g * y.value, x.shape), _unbroadcast(g * x.value, y.shape)])
+grad_fun["mul"] = (lambda g, x, y, z: [_unbroadcast(g * y.value, x), _unbroadcast(g * x.value, y)])
 value_fun["mul"] = (lambda x, y: x.value * y.value)
 
 # NOTE: Does not take the derivative W.R.T. y
 #grad_fun["pow"] = (lambda g, x, y, z: (g * np.power(y.value * x.value, y.value - 1), 0))
-grad_fun["pow"] = (lambda g, x, y, z: [_unbroadcast(g * y.value * np.power(x.value, y.value - 1), x.shape), 0])
+grad_fun["pow"] = (lambda g, x, y, z: [_unbroadcast(g * y.value * np.power(x.value, y.value - 1), x), 0])
 value_fun["pow"] = (lambda x, y: x.value ** y.value)
 
 # I re-wrote div in terms of exponentiation TEMP
 value_fun["div"] = (lambda x, y: x.value / y.value)
-grad_fun["div"] = (lambda g, x, y, z: (_unbroadcast(g * (1.0 / y.value), x.shape), _unbroadcast(g * (-x.value / (y.value ** 2)), y.shape)))
+grad_fun["div"] = (lambda g, x, y, z: (_unbroadcast(g * (1.0 / y.value), x), _unbroadcast(g * (-x.value / (y.value ** 2)), y)))
 
 
 ### --- Activation Function Ops --- ###

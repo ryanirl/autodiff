@@ -17,6 +17,8 @@ class Tensor:
         self._update = lambda: self.value
         self._pass = False
 
+        self._broadcasted = False
+
     ### --- Operator Overloading --- ###
 
     def __neg__(self):
