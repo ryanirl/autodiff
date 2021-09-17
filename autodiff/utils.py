@@ -2,6 +2,7 @@ import numpy as np
 from numpy.lib.stride_tricks import as_strided
 
 ### --- Tensor Utils --- ###
+
 def check(x, Type): 
     return x if isinstance(x, Type) else Type(x)
 
@@ -11,6 +12,7 @@ def primitive(Class):
         setattr(Class, method.__name__, method) 
         return method 
     return register_methods 
+
 
 ### --- Numerically Stable Utils --- ###
 

@@ -75,7 +75,6 @@ Table of Contents
  - Utils: One-Hot for CCE-Loss, Split for Test/Train (Tensors), Pre-Defined Datasets
  - Grad Check
  - Hardware Acceleration?
- - Normalization (L1 & L2)
  - Lots of Examples
  - Lots of Documentation
 

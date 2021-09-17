@@ -25,6 +25,7 @@ class SGD(Optimizer):
 
         self.velocity = np.array([np.zeros(tensor.shape) for tensor in parameters])
 
+
     def step(self):
         for i, param in enumerate(self.parameters):
             if not self.nestrov:

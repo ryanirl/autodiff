@@ -14,6 +14,8 @@ class Tensor:
         self._outgrad = lambda x, y: () 
         self._children = _children
 
+        self._update = lambda: self.value
+        self._pass = False
 
     ### --- Operator Overloading --- ###
 
@@ -144,8 +146,6 @@ class Tensor:
     def tanh(self):
         return OP("tanh", self)
 
-    # I optimized this because tensor_softmax 
-    # is expensive so use softmax instead
     def tensor_softmax(self):
         a = (self - self.max()).exp()
         b = a.sum(axis = 1, keepdims = True)
@@ -181,11 +181,13 @@ class Tensor:
     def softmax_categorical_cross_entropy(self, actual):
         return OP("softmax_categorical_cross_entropy", self, actual)
 
+
     ### --- Backprop --- ###
-    def backward(self):
+
+    def _build_topo(self):
         topo = []
         visited = set()
-    
+
         def recurse(tensor):
             if tensor not in visited:
                 visited.add(tensor)
@@ -197,20 +199,46 @@ class Tensor:
     
         recurse(self)
 
+        self._topo = topo
+
+    def backward(self):
         self.grad = np.ones(np.shape(self.value)) 
 
-        for tensor in topo:
+        if self._pass: self.update_graph()
+        else: 
+            self._pass = True
+
+            self._build_topo()
+
+            for tensor in self._topo:
+                grad = tensor._outgrad(tensor.grad, *tensor._children, tensor.value)
+
+                for child, ingrad in zip(tensor._children, grad):
+                    child.grad = child.grad + ingrad
+
+    def _update_backward_grads(self):
+        self.grad = np.ones(np.shape(self.value)) 
+
+        for tensor in self._topo:
             grad = tensor._outgrad(tensor.grad, *tensor._children, tensor.value)
 
             for child, ingrad in zip(tensor._children, grad):
                 child.grad = child.grad + ingrad
+    
+    def _update_forward_values(self):
+        for tensor in self._topo:
+            tensor.value = tensor._update(*tensor._children)
+            tensor.grad = 0
 
+    def update_graph(self):
+        assert self._pass == True
+        self._update_forward_values()
+        self._update_backward_grads()
 
 
 ### ----- OP TYEPS ----- ### 
 
 def OP(op, *tensors):
-
     value = value_fun[op](*tensors)
 
     requires_grad = True if sum([tensor.requires_grad for tensor in tensors]) > 0 else False
@@ -218,6 +246,9 @@ def OP(op, *tensors):
     output_tensor = Tensor(value, tensors, requires_grad)
 
     output_tensor._outgrad = grad_fun[op]
+
+    # REMOVE THIS
+    output_tensor._update = value_fun[op]
 
     return output_tensor
 
