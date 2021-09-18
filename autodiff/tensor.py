@@ -15,7 +15,6 @@ class Tensor:
         self._children = _children
 
         self._update = lambda: self.value
-        self._pass = False
 
         self._broadcasted = False
 
@@ -186,7 +185,7 @@ class Tensor:
 
     ### --- Backprop --- ###
 
-    def _build_topo(self):
+    def build_topo(self):
         topo = []
         visited = set()
 
@@ -203,20 +202,23 @@ class Tensor:
 
         self._topo = topo
 
+    def topo_backward(self):
+        self.grad = np.ones(np.shape(self.value))
+        self.update_graph()
+
     def backward(self):
-        self.grad = np.ones(np.shape(self.value)) 
+        self.build_topo()
 
-        if self._pass: self.update_graph()
-        else: 
-            self._pass = True
+        for tensor in self._topo:
+            grad = tensor._outgrad(tensor.grad, *tensor._children, tensor.value)
 
-            self._build_topo()
+            for child, ingrad in zip(tensor._children, grad):
+                child.grad = child.grad + ingrad
 
-            for tensor in self._topo:
-                grad = tensor._outgrad(tensor.grad, *tensor._children, tensor.value)
-
-                for child, ingrad in zip(tensor._children, grad):
-                    child.grad = child.grad + ingrad
+    def _update_forward_values(self):
+        for tensor in self._topo:
+            tensor.value = tensor._update(*tensor._children)
+            tensor.grad = 0
 
     def _update_backward_grads(self):
         self.grad = np.ones(np.shape(self.value)) 
@@ -226,14 +228,8 @@ class Tensor:
 
             for child, ingrad in zip(tensor._children, grad):
                 child.grad = child.grad + ingrad
-    
-    def _update_forward_values(self):
-        for tensor in self._topo:
-            tensor.value = tensor._update(*tensor._children)
-            tensor.grad = 0
 
     def update_graph(self):
-        assert self._pass == True
         self._update_forward_values()
         self._update_backward_grads()
 

@@ -30,14 +30,20 @@ optimizer = nn.Adam(model.parameters(), lr = 0.001)
 loss_fun = nn.SigmoidBinaryCrossEntropy()
 
 out = model.forward(X) 
+
 loss = loss_fun(out, y)
+
+loss.build_topo()
 
 # Using updates rather than recomputaiton
 # reduced time by 23% on this test.
+# Though this may give up some functionality,
+# I am unsure what kind of functionality I am
+# giving up yet though.
 start = time.time()
 
 for i in range(50000):
-    loss.backward()
+    loss.topo_backward()
 
     optimizer.step()
 
