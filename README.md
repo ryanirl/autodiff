@@ -16,19 +16,14 @@ backpropagation) library written in Python with Numpy vectorization.
 AutoDiff works by breaking up larger user defined functions into primitive
 operators (such as addition, muliplication, etc.) whos derivatives are
 pre-defined. Autodiff then dynamically builds a computation graph of the larger
-function using these primitive operators during a forward pass and then
-applies the chain rule through the backwards pass of the computation
-graph to compute the derivative of the larger fucntion wrt some variable.
+function using these primitive operators as nodes during a forward pass and then
+applies the chain rule through a backwards pass of the computation graph to
+compute the derivative of the larger fucntion wrt some variable. 
 
-Though there are various methods to do reverse-mode automatic differentiation.
+Though there are various methods to impliment reverse-mode automatic differentiation.
 AutoDiff works via Python's Operator Overloading abilities which is by far the
 simplier and more intuitive of the methods. 
 
-This project is still very much a work in progress and I am currently in the
-process of building this into a mini deep learning library with support for
-training basic MLP's, CNN's, and more. I am also considering on adding support
-for higher-order derivatives once I'm done building the support for basic
-neural nets. 
 
 ---
 
@@ -52,16 +47,16 @@ Table of Contents
 <!-- Currently Supported -->
 ### Currently Supported NN Features:
 
-**Layers:** Linear, Sequential, Activation Layers, Convolutions
-
-
-**Activation Functions:** ReLU, Leaky_ReLU, Sigmoid, Softmax, TanH
-
-
-**Loss Functions:** MSE, BinaryCE, CategoricalBE, Sigmoid & Softmax w/CE
-
-
-**Optimizers:** SGD w/ Momentum, AdaGrad, RMSProp, Adam
+| Activation Functions | Implimented |   | Loss Functions      | Implimented          |   | Optimizers       | Implimented          |
+| ----------- | -------------------- | - | ------------------- | -------------------- | - | ---------------- | -------------------- |
+| ReLU        | :white_check_mark:   |   | MAE (L1)            | :white_large_square: |   | SGD              | :white_check_mark:   |
+| Leaky ReLU  | :white_check_mark:   |   | MSE (L2)            | :white_check_mark:   |   | SGD w/ Momentum  | :white_check_mark:   |
+| PReLU       | :white_large_square: |   | Binary CE           | :white_check_mark:   |   | Nestrov Momemtum | :white_check_mark:   |
+| Sigmoid     | :white_check_mark:   |   | Categorical CE      | :white_check_mark:   |   | AdaGrad          | :white_check_mark:   |
+| Log Sigmoid | :white_large_square: |   | Sigmoid & Soft w/CE | :white_check_mark:   |   | RMSProp          | :white_check_mark:   |
+| Softmax     | :white_check_mark:   |   | Hinge Loss          | :white_large_square: |   | Adam             | :white_check_mark:   |
+| Log Softmax | :white_large_square: |   |                     |                      |   | AdaDelta         | :white_large_square: |
+| TanH        | :white_check_mark:   |   |                     |                      |   |                  |                      |
 
 
 ---
@@ -85,7 +80,7 @@ Table of Contents
 ### Installation
 
 At the moment just gonna have to clone the repo and make sure you have numpy
-installed which is it's only dependency.
+installed (which is it's only dependency) if you want to play with it.
 
 Not tested on Python2.
 
@@ -94,7 +89,7 @@ Not tested on Python2.
 <!-- USAGE -->
 ### USAGE 
 
-Basic Example Usage:
+Basic Example:
 
 ```python
 
@@ -104,7 +99,7 @@ a = Tensor(2)
 b = Tensor(3)
 
 # This is the same as writing f(x) = ((a + b) * a)^2
-# We just break it down into primitive ops
+# We just break it down into primitive ops.
 
 z = a + b
 y = z * a
@@ -208,6 +203,7 @@ y = x.tanh()
 y.backward()
 
 print("The gradient of y wrt x: {}".format(x.grad))
+
 
 ```
 

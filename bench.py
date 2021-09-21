@@ -8,19 +8,20 @@
 # differentiation has. See my from scratch implimentation here: 
 # https://github.com/ryanirl/ml-basics/blob/main/deep_learning/moons_from_scratch.py
 # 
-# Current Speed:
-# From Scratch on 50k epochs: 6.3 seconds avg
-# Autodiff on 50k epochs: 10.5 seconds avg
+# Benchmark on 2019 Macbook Pro CPU
+# ------------------------------------------------------------------------------
+# | Scrach Implimentation | 50k Epochs |  6.3 seconds | Epoch Speed: 0.000126s |
+# ------------------------------------------------------------------------------
+# | Autodiff              | 50k Epochs | 10.5 seconds | Epoch Speed: 0.000210s |
+# ------------------------------------------------------------------------------
 #
 # Without optimization I was averaging 18.9 seconds. Optimizing control flow,
 # update rules, swtiching from Adam to SGD (because my from scratch is SGD),
 # and the unbroadcast function has allowed me to cut this time down to 10.5s
-# on average.
+# on average. This tells me that Autodiff has 4.2 seconds of overhead for
+# this specific example. I am trying to reduce this as much as I can without
+# sacrificing functionality.
 # 
-# Everything is run on a 2019 Macbook Pro CPU. Ultimitelly this tells me that
-# my autodiff implimentation has 4.2 seconds of overhead in this case that I 
-# need to lower as much as I can. 
-#
 # Ideas for Optimization:
 #    - Optimize optim classes. 
 #    - Anything that has to compute at each epoch, that has a constant state
@@ -31,7 +32,7 @@
 #      computation but I will keep my eye out.
 # 
 # -----------------------------------------------------------
-# Fasted lucky run so far: 10.09 (so close to sub 10 seconds)
+# Fasted lucky run so far: 9.96769118309021 | SUB 10 SECONDS!
 # -----------------------------------------------------------
 # 
 
