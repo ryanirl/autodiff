@@ -1,9 +1,8 @@
-# RYAN P 
+# RYAN P
 
-import numpy as np
 from autodiff.ops import grad_fun, value_fun
-from autodiff.utils import check
-
+from autodiff.utils import check, broadcasted
+import numpy as np
 
 class Tensor:
     def __init__(self, value, _children = [], requires_grad = True):
@@ -11,18 +10,26 @@ class Tensor:
         self.requires_grad = requires_grad
         self.grad = np.zeros(np.shape(self.value))
 
+        self._op = "LEAF"
+        self._forward = lambda: self.value
         self._outgrad = lambda x, y: () 
         self._children = _children
 
-        self._update = lambda: self.value
+    ### --- Tensor Representation --- ### 
 
-        self._broadcasted = False
+    def __str__(self):
+        return "< {} Tensor | Value : {} | Grad: {} | Instant at: {} >".format(
+                  self._op, self.value, self.grad, id(self))
+
+    __repr__ = __str__
+
 
     ### --- Operator Overloading --- ###
 
     def __neg__(self):
         return self * -1
 
+    @broadcasted
     def __add__(self, other):
         return OP("add", self, check(other, Tensor))
 
@@ -35,24 +42,30 @@ class Tensor:
     def __rsub__(self, other): 
         return other + (-self)
 
+    @broadcasted
     def __pow__(self, other):
         return OP("pow", self, check(other, Tensor))
 
+    @broadcasted
     def __mul__(self, other):
         return OP("mul", self, check(other, Tensor))
 
     def __rmul__(self, other):
         return self * other
 
+    @broadcasted
     def __div__(self, other):
         return OP("div", self, check(other, Tensor))
 
+    @broadcasted
     def __rdiv__(self, other):
         return OP("div", check(other, Tensor), self)
 
+    @broadcasted
     def __truediv__(self, other):
         return OP("div", self, check(other, Tensor))
 
+    @broadcasted
     def __rtruediv__(self, other):
         return OP("div", check(other, Tensor), self)
 
@@ -183,7 +196,7 @@ class Tensor:
         return OP("softmax_categorical_cross_entropy", self, actual)
 
 
-    ### --- Backprop --- ###
+    ### --- Backprop & Computation Graph Functions --- ###
 
     def build_topo(self):
         topo = []
@@ -202,36 +215,35 @@ class Tensor:
 
         self._topo = topo
 
-    def topo_backward(self):
-        self.grad = np.ones(np.shape(self.value))
-        self.update_graph()
+    def topo_update(self):
+        """
+        May be used as an optimized backwards pass
+        for multiple epcohs, if control flow allows
+        for it.
+
+        """
+        for tensor in self._topo:
+            tensor.value = tensor._forward(*tensor._children)
+            tensor.grad = 0
+
+        self.grad = np.ones(np.shape(self.value)) 
+
+        for tensor in self._topo:
+            grad = tensor._outgrad(tensor.grad, *tensor._children, tensor)
+
+            for child, ingrad in zip(tensor._children, grad):
+                child.grad = child.grad + ingrad
 
     def backward(self):
         self.build_topo()
 
+        self.grad = np.ones(np.shape(self.value))
+
         for tensor in self._topo:
-            grad = tensor._outgrad(tensor.grad, *tensor._children, tensor.value)
+            grad = tensor._outgrad(tensor.grad, *tensor._children, tensor)
 
             for child, ingrad in zip(tensor._children, grad):
                 child.grad = child.grad + ingrad
-
-    def _update_forward_values(self):
-        for tensor in self._topo:
-            tensor.value = tensor._update(*tensor._children)
-            tensor.grad = 0
-
-    def _update_backward_grads(self):
-        self.grad = np.ones(np.shape(self.value)) 
-
-        for tensor in self._topo:
-            grad = tensor._outgrad(tensor.grad, *tensor._children, tensor.value)
-
-            for child, ingrad in zip(tensor._children, grad):
-                child.grad = child.grad + ingrad
-
-    def update_graph(self):
-        self._update_forward_values()
-        self._update_backward_grads()
 
 
 ### ----- OP TYEPS ----- ### 
@@ -244,9 +256,8 @@ def OP(op, *tensors):
     output_tensor = Tensor(value, tensors, requires_grad)
 
     output_tensor._outgrad = grad_fun[op]
-
-    # REMOVE THIS
-    output_tensor._update = value_fun[op]
+    output_tensor._forward = value_fun[op]
+    output_tensor._op = op
 
     return output_tensor
 

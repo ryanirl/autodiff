@@ -7,6 +7,20 @@ from numpy.lib.stride_tricks import as_strided
 def check(x, Type): 
     return x if isinstance(x, Type) else Type(x)
 
+def broadcasted(func): 
+    def _op(x, y):
+        output_tensor = func(x, y)
+
+        x = output_tensor._children[0]
+        y = output_tensor._children[1]
+
+        x_axis = unbroadcast_axes(output_tensor.shape, x.shape)
+        y_axis = unbroadcast_axes(output_tensor.shape, y.shape)
+
+        output_tensor._unbroadcast_axis = [x_axis, y_axis]
+
+        return output_tensor
+    return _op
 
 def primitive(Class):
     def register_methods(method):
@@ -73,18 +87,8 @@ def unbroadcast_axes(shape_in, shape_out):
 
     return tuple(reduction_axes)
 
-
-def _unbroadcast(grad, tensor):
-    if tensor._broadcasted: return np.reshape(np.sum(grad, axis = tensor._broadcast_axis, keepdims = True), tensor.shape)
-    else: 
-        to_shape = tensor.shape
-
-        sum_axes = unbroadcast_axes(np.shape(grad), to_shape)
-
-        tensor._broadcast_axis = sum_axes
-        tensor._broadcasted = True
-
-        return np.reshape(np.sum(grad, axis = sum_axes, keepdims = True), to_shape)
+def _unbroadcast(grad, axis, shape):
+    return np.reshape(np.sum(grad, axis = axis, keepdims = True), shape)
 
 
 ### --- Convolution Utils --- ###

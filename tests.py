@@ -100,7 +100,7 @@ def speedtest():
 
     neuron = Neuron(OLS_loss, 1)
     neuron.forward(x, y)
-    weight, bias = neuron.step(100000, 0.01)
+    weight, bias = neuron.step(1000, 0.01)
     print(weight.value)
     print(bias.value)
 
@@ -120,7 +120,7 @@ def test3():
     value_fun["tanh"] = (lambda x: (e(x) - e(-x)) / (e(x) + e(-x)))
 
     # multiplying each gradient by "g" is requied by the chain rule
-    grad_fun["tanh"] = (lambda g, x, z: [(g * (1.0 -(z ** 2)))])
+    grad_fun["tanh"] = (lambda g, x, z: [(g * (1.0 - (z.value ** 2)))])
 
     # Check(x, Tenor) just garentees that some x is not Tensor
     @primitive(Tensor)

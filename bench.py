@@ -43,7 +43,7 @@ loss.build_topo()
 start = time.time()
 
 for i in range(50000):
-    loss.topo_backward()
+    loss.topo_update()
 
     optimizer.step()
 
