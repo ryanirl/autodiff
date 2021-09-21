@@ -58,6 +58,12 @@ class CategoricalCrossEntropy:
 
 
 class SoftmaxCategoricalCrossEntropy:
+    """
+    Looking at this I think I see a bug, though I'm going to
+    have to do some testing to make sure that it's not something
+    I did on purpose.
+
+    """
     def __call__(self, pred, actual):
         self.pred = pred
 

@@ -195,7 +195,7 @@ def e(x): return np.exp(x.value)
 value_fun["tanh"] = (lambda x: (e(x) - e(-x)) / (e(x) + e(-x)))
 
 # multiplying each gradient by "g" is requied by the chain rule
-grad_fun["tanh"] = (lambda g, x, z: [(g * (1.0 - (z ** 2)))])
+grad_fun["tanh"] = (lambda g, x, z: [(g * (1.0 - (z.value ** 2)))])
 
 @primitive(Tensor)
 def tanh(self):

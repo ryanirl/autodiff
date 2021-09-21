@@ -17,8 +17,8 @@ class Optimizer:
 
 
 
-class SGD(Optimizer):
-    def __init__(self, parameters, lr = 0.01, momentum = 0, nestrov = False):
+class SGDMomentum(Optimizer):
+    def __init__(self, parameters, lr = 0.01, momentum = 0.9, nestrov = False):
         super().__init__(parameters, lr)
         self.momentum = momentum
         self.nestrov = nestrov
@@ -29,8 +29,7 @@ class SGD(Optimizer):
     def step(self):
         for i, param in enumerate(self.parameters):
             if not self.nestrov:
-                if self.momentum != 0: 
-                    self.velocity[i] = self.velocity[i] * self.momentum + param.grad
+                self.velocity[i] = self.velocity[i] * self.momentum + param.grad
 
                 param.value = param.value - self.lr * (param.grad + self.velocity[i])
 
@@ -41,6 +40,13 @@ class SGD(Optimizer):
 
                 param.value = param.value + (-self.momentum * old_velocity + ((1.0 + self.momentum) * self.velocity[i]))
 
+class SGD(Optimizer):
+    def __init__(self, parameters, lr = 0.01):
+        super().__init__(parameters, lr)
+
+    def step(self):
+        for i, param in enumerate(self.parameters):
+            param.value = param.value - (self.lr * param.grad)
 
 
 # NEED TO TEST
