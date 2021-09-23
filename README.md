@@ -9,7 +9,7 @@
 -------
 
 
-**WORK IN PROGRESS*
+*WORK IN PROGRESS*
 
 AutoDiff is a lightweight reverse-mode automatic differentiation (a.k.a
 backpropagation) library written in Python with Numpy vectorization.
@@ -58,6 +58,18 @@ Table of Contents
 | Log Softmax | :white_large_square: |   |                     |                      |   | AdaDelta         | :white_large_square: |
 | TanH        | :white_check_mark:   |   |                     |                      |   |                  |                      |
 
+
+---
+
+
+| Layers        | Implimented          |   | Autodiff Functionality | Implimented          |
+| ------------- | -------------------- | - | ---------------------- | -------------------- |
+| Linear        | :white_check_mark:   |   | Higher Order Gradients | :white_large_square: |
+| Sequential    | :white_check_mark:   |   | Hardware Acceleration  | :white_large_square: |
+| 2DConvolution | :white_large_square: |   | Tape Based Methods     | :white_large_square: |
+| Max Pooling   | :white_large_square: |   | Float32 Tensors        | :white_large_square: |
+| Batch Norm    | :white_large_square: |   | Grad Check             | :white_large_square: |
+| Dropout       | :white_large_square: |   |                        |                      |
 
 ---
 
@@ -212,4 +224,8 @@ print("The gradient of y wrt x: {}".format(x.grad))
 <!-- LISCENCE -->
 ### LISCENCE
 
-#### MIT
+<!-- LICENSE -->
+## License
+
+Distributed under the MIT License. See `LICENSE` for more information.
+
