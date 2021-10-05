@@ -31,9 +31,14 @@
 #      This is very hard to exploit as almost everything relies on the previous
 #      computation but I will keep my eye out.
 # 
-# -----------------------------------------------------------
-# Fasted lucky run so far: 9.96769118309021 | SUB 10 SECONDS!
-# -----------------------------------------------------------
+# ------------------------------------------------------------
+# Fasted lucky run so far: 9.171808004379272 | SUB 10 SECONDS!
+# ------------------------------------------------------------
+# 
+# Oct 5th, FOUND THE BOTTLE NECK:
+# Removing the "unbroadcast" from the addition operator (because this model only uses
+# addition) reduces the total runtime to: 6.444812059402466 seconds. That's nearly a
+# 30% increase in speed... YIKES
 # 
 
 
@@ -69,16 +74,23 @@ out = model.forward(X)
 
 loss = loss_fun(out, y)
 
-loss.build_topo()
+loss.toposort()
 
+
+#import cProfile
+#
+#with cProfile.Profile() as pr:
 start = time.time()
-
 for i in range(EPOCHS):
     loss.topo_update()
-
     optimizer.step()
 
 print("{} EPOCHS Computed in: {}".format(EPOCHS, time.time() - start))
+
+#pr.print_stats()
+
+
+
 
 X = X.value
 y = y.value

@@ -1,12 +1,12 @@
-# RYAN P
-
 from autodiff.ops import grad_fun, value_fun
 from autodiff.utils import check, broadcasted
+from inspect import signature
 import numpy as np
+
 
 class Tensor:
     def __init__(self, value, _children = [], requires_grad = True):
-        self.value = np.atleast_2d(value) if isinstance(value, np.ndarray) else np.atleast_2d(value)
+        self.value = np.atleast_2d(value)
         self.requires_grad = requires_grad
         self.grad = np.zeros(np.shape(self.value))
 
@@ -14,6 +14,7 @@ class Tensor:
         self._forward = lambda: self.value
         self._outgrad = lambda x, y: () 
         self._children = _children
+
 
     ### --- Tensor Representation --- ### 
 
@@ -33,14 +34,17 @@ class Tensor:
     def __add__(self, other):
         return OP("add", self, check(other, Tensor))
 
+    @broadcasted
     def __radd__(self, other):
-        return self + other
+        return OP("add", check(other, Tensor), self)
 
+    @broadcasted
     def __sub__(self, other):
-        return self + (-other)
+        return OP("sub", self, check(other, Tensor))
 
+    @broadcasted
     def __rsub__(self, other): 
-        return other + (-self)
+        return OP("sub", check(other, Tensor), self)
 
     @broadcasted
     def __pow__(self, other):
@@ -50,8 +54,9 @@ class Tensor:
     def __mul__(self, other):
         return OP("mul", self, check(other, Tensor))
 
+    @broadcasted
     def __rmul__(self, other):
-        return self * other
+        return OP("mul", check(other, Tensor), self)
 
     @broadcasted
     def __div__(self, other):
@@ -151,54 +156,16 @@ class Tensor:
     def relu(self):
         return OP("relu", self)
 
-    def softmax(self):
-        return OP("softmax", self)
-
     def leaky_relu(self):
         return OP("leaky_relu", self)
 
     def tanh(self):
         return OP("tanh", self)
 
-    def tensor_softmax(self):
-        a = (self - self.max()).exp()
-        b = a.sum(axis = 1, keepdims = True)
-
-        return a / b
-
-
-    ### --- Convolutions --- ###
-
-    def conv2d(self, weight, stride, padding):
-        self.stride = stride
-        self.padding = padding
-        self.cached_im2col = None
-
-        return OP("conv2d", self, check(weight, Tensor))
-
-#    def pool2d(self, pool_stride, pool_filter_size):
-#        self.pool_stride = pool_stride
-#        self.pool_filter_size = pool_filter_size
-
-
-    ### --- Loss Functions --- ###
-
-    def stable_binary_cross_entropy_loss(self, actual):
-        return OP("stable_binary_cross_entropy_loss", self, actual)
-
-    def categorical_cross_entropy_loss(self, actual):
-        return OP("categorical_cross_entropy_loss", self, actual)
-
-    def sigmoid_binary_cross_entropy(self, actual):
-        return OP("sigmoid_binary_cross_entropy", self, actual)
-
-    def softmax_categorical_cross_entropy(self, actual):
-        return OP("softmax_categorical_cross_entropy", self, actual)
-
 
     ### --- Backprop & Computation Graph Functions --- ###
 
-    def build_topo(self):
+    def toposort(self):
         topo = []
         visited = set()
 
@@ -217,16 +184,18 @@ class Tensor:
 
     def topo_update(self):
         """
-        May be used as an optimized backwards pass
-        for multiple epcohs, if control flow allows
-        for it.
+        If you update a leaf node, this may be used to update the rest
+        of the graph along with it. That being forward then backwards
+        propogating that change through the graph. If control flow allows
+        for it, this would be an opimization to the naive 'backward()'
+        method assuming large epochs.
 
         """
         for tensor in self._topo:
             tensor.value = tensor._forward(*tensor._children)
             tensor.grad = 0
 
-        self.grad = np.ones(np.shape(self.value)) 
+        self.grad = np.ones(np.shape(self.value))
 
         for tensor in self._topo:
             grad = tensor._outgrad(tensor.grad, *tensor._children, tensor)
@@ -235,7 +204,7 @@ class Tensor:
                 child.grad = child.grad + ingrad
 
     def backward(self):
-        self.build_topo()
+        self.toposort()
 
         self.grad = np.ones(np.shape(self.value))
 
@@ -246,7 +215,7 @@ class Tensor:
                 child.grad = child.grad + ingrad
 
 
-### ----- OP TYEPS ----- ### 
+### ----- OP BUILDER ----- ### 
 
 def OP(op, *tensors):
     value = value_fun[op](*tensors)
@@ -260,6 +229,21 @@ def OP(op, *tensors):
     output_tensor._op = op
 
     return output_tensor
+
+
+class primitive:
+    def __new__(cls, *args, **kwargs):
+        value_fun[cls.__name__] = (cls.forward)
+        grad_fun[cls.__name__] = (cls.backward)
+
+        parameters = list(signature(cls.forward).parameters)
+        parameters[0] = 'self'
+
+        method = lambda *parameters: OP(cls.__name__, *parameters)
+
+        setattr(Tensor, cls.__name__, method) 
+
+        return super().__new__(cls)
 
 
 

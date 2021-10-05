@@ -23,7 +23,10 @@ class Sequential(Module):
 
         return X
     
-    def forward(self, X): return self.__call__(X)
+    def forward(self, X): 
+        return self.__call__(X)
+
+
 
 
 

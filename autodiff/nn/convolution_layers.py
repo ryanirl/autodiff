@@ -1,13 +1,12 @@
-# Finally getting started on convolution layers
-
-from autodiff.tensor import Tensor
 from autodiff.nn.containers import Module 
+from autodiff.tensor import Tensor
 import numpy as np
 
 
 class Conv1D:
     def __init__(self):
         pass
+
 
 class Conv2D:
     def __init__(self, channels, filters, kernel_size = 3, stride = 1, padding = 0, bias = True):
@@ -36,5 +35,11 @@ class Conv2D:
 
         if self.use_bias: return x.conv2d(self.weights, self.stride, self.padding) + self.bias
         else: return x.conv2d(self.weights, self.stride, self.padding)
+
+
+
+#### --- Convolution Ops --- ### 
+#value_fun["conv2d"] = (lambda x, weights: _conv2d_forward(x, weights.value))
+#grad_fun["conv2d"] = (lambda g, x, weights, z: _conv2d_backward(g, x, weights, z.value))
 
 

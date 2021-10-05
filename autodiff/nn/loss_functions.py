@@ -1,5 +1,4 @@
 from autodiff.tensor import Tensor
-from autodiff.utils import check, to_logits, clip_stable
 import numpy as np
 
 
@@ -14,7 +13,6 @@ class TensorBinaryCrossEntropy:
         a = pred * (actual + 1e-6) + (1 - pred) * (1 - actual + 1e-6)
 
         return -np.log(a)
-
 
 
 class SigmoidBinaryCrossEntropy:
@@ -34,7 +32,6 @@ class SigmoidBinaryCrossEntropy:
         return self.pred.backward()
 
 
-
 class BinaryCrossEntropy:
     """
     This using logits for numeric stability.
@@ -47,14 +44,12 @@ class BinaryCrossEntropy:
     def backward(self): self.out.backward()
 
 
-
 class CategoricalCrossEntropy:
     def __call__(self, pred, actual):
         self.out = pred.categorical_cross_entropy_loss(actual)
         return self.out 
 
     def backward(self): self.out.backward()
-
 
 
 class SoftmaxCategoricalCrossEntropy:
@@ -71,7 +66,6 @@ class SoftmaxCategoricalCrossEntropy:
 
     def backward(self):
         return self.pred.backward()
-
 
 
 class MSE:

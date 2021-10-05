@@ -2,7 +2,6 @@ from autodiff.tensor import Tensor
 import numpy as np
 
 
-
 class Optimizer:
     def __init__(self, parameters, lr):
         self.parameters = parameters
@@ -12,9 +11,8 @@ class Optimizer:
         for param in self.parameters:
             param.grad = 0
 
-    def add_parameters(self, new_param):
-        self.parameters.append(new_param)
-
+#    def add_parameters(self, new_param):
+#        self.parameters.append(new_param)
 
 
 class SGDMomentum(Optimizer):
@@ -40,16 +38,16 @@ class SGDMomentum(Optimizer):
 
                 param.value = param.value + (-self.momentum * old_velocity + ((1.0 + self.momentum) * self.velocity[i]))
 
+
 class SGD(Optimizer):
     def __init__(self, parameters, lr = 0.01):
         super().__init__(parameters, lr)
 
     def step(self):
-        for i, param in enumerate(self.parameters):
+        for param in self.parameters:
             param.value = param.value - (self.lr * param.grad)
 
 
-# NEED TO TEST
 class RMSProp(Optimizer):
     def __init__(self, parameters, lr = 0.01, eps = 1e-7, decay_rate = 0.99):
         super().__init__(parameters, lr)
@@ -66,8 +64,6 @@ class RMSProp(Optimizer):
             param.value = param.value - self.lr * (grad / (np.sqrt(self.grad_squared[i]) + self.eps))
 
 
-
-# NEED TO TEST
 class AdaGrad(Optimizer):
     def __init__(self, parameters, lr = 0.01, eps = 1e-7):
         super().__init__(parameters, lr)
@@ -83,8 +79,6 @@ class AdaGrad(Optimizer):
             param.value = param.value - self.lr * (grad / (np.sqrt(self.grad_squared[i]) + self.eps))
 
 
-
-# NEED TO TEST
 class Adam(Optimizer):
     def __init__(self, parameters, lr = 0.01, beta1 = 0.9, beta2 = 0.99, eps = 1e-7):
         super().__init__(parameters, lr)
@@ -103,9 +97,6 @@ class Adam(Optimizer):
             self.moment2[i] = self.beta2 * self.moment2[i] + (1.0 - self.beta2) * (grad * grad)
 
             param.value = param.value - self.lr * (self.moment1[i] / (np.sqrt(self.moment2[i]) + self.eps))
-
-
-
 
 
 

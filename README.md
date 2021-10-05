@@ -45,7 +45,7 @@ Table of Contents
 
 
 <!-- Currently Supported -->
-### Currently Supported NN Features:
+## Currently Supported NN Features:
 
 | Activation Functions | Implimented |   | Loss Functions      | Implimented          |   | Optimizers       | Implimented          |
 | ----------- | -------------------- | - | ------------------- | -------------------- | - | ---------------- | -------------------- |
@@ -58,8 +58,6 @@ Table of Contents
 | Log Softmax | :white_large_square: |   |                     |                      |   | AdaDelta         | :white_large_square: |
 | TanH        | :white_check_mark:   |   |                     |                      |   |                  |                      |
 
-
----
 
 
 | Layers        | Implimented          |   | Autodiff Functionality | Implimented          |
@@ -75,7 +73,7 @@ Table of Contents
 
 
 <!-- TODO -->
-### TODO:
+## TODO:
  - Primitive Functions: aMax
  - Loss Functions: Hinge, MAE
  - Layers: Pooling, Batch Normalization, Dropout, etc.
@@ -89,7 +87,7 @@ Table of Contents
 ---
 
 <!-- INSTALLATION -->
-### Installation
+## Installation
 
 At the moment just gonna have to clone the repo and make sure you have numpy
 installed (which is it's only dependency) if you want to play with it.
@@ -99,9 +97,11 @@ Not tested on Python2.
 ---
 
 <!-- USAGE -->
-### USAGE 
+## USAGE 
 
-Basic Example:
+
+<!-- BASIC USAGE -->
+### Basic Example:
 
 ```python
 
@@ -127,6 +127,9 @@ print("grad wrt B: ({})".format(b.grad))
 ```
 
 ---
+
+<!-- NN EXAMPLE -->
+### NN Example:
 
 Bulding an MLP to do multiclass Softmax classification is as simple as this:
 This example in full detail can be found here: https://github.com/ryanirl/autodiff/blob/main/examples/spiral_classification.py
@@ -161,7 +164,6 @@ for i in range(1000):
     X.grad = 0 # Required if X is Tensor
     y.grad = 0 # Required if y is Tensor
 
-
 ```
 
 Plotting the decision boundry gives: 
@@ -178,13 +180,52 @@ Plotting the decision boundry gives:
 
 ---
 
+<!-- USER DEFINED PRIMITIVES -->
+### User Defined Primitives
 
 You can even define your own primitive functions. An example of a user defined
 primitive function may be: 
 
+```python
+from autodiff.tensor import Tensor, primitive
+import numpy as np
 
-**Note #1:** I will be working on a guide sooon to better explain this code and
-how it works to add your own primitive operators.
+# For simplicity
+def e(x): return np.exp(x.value)
+
+
+class tanh(primitive):
+    def forward(x):
+        return (e(x) - e(-x)) / (e(x) + e(-x))
+
+    def backward(g, x, z):
+        return [g * (1.0 - (z.value ** 2))]
+
+
+# Must do this so it 'registers'
+tanh()
+
+x = Tensor([1, 2, 3])
+y = x.tanh()
+
+y.backward()
+
+print("The gradient of y wrt x: {}".format(x.grad))
+
+# OUTPUTS: The gradient of y wrt x: [[0.41997434 0.07065082 0.00986604]]
+
+```
+
+
+**NOTE:** This following method is outdated, I have a new method for adding
+primitive functions (as seen above), that is simpler and more intuitive.
+
+
+**Note #1:** I have a guide up, under `./documentation` for those who are interested
+in an in depth tutorial for adding new primitives
+
+
+**OLD WAY OF ADDING USER DEFINED PRIMITIVES:**
 
 
 ```python
@@ -197,7 +238,6 @@ from utils import primitive, check
 # NOTE: TANH HAS ALREADY BEEN IMPLEMENTED, THOUGH THIS IS HOW IT
 # WOULD WORK IF IT WEREN'T ALREADY 
 
-def e(x): return np.exp(x.value)
 
 value_fun["tanh"] = (lambda x: (e(x) - e(-x)) / (e(x) + e(-x)))
 
@@ -216,13 +256,8 @@ y.backward()
 
 print("The gradient of y wrt x: {}".format(x.grad))
 
-
 ```
 
-
-
-<!-- LISCENCE -->
-### LISCENCE
 
 <!-- LICENSE -->
 ## License
