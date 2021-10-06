@@ -38,8 +38,3 @@ class Conv2D:
 
 
 
-#### --- Convolution Ops --- ### 
-#value_fun["conv2d"] = (lambda x, weights: _conv2d_forward(x, weights.value))
-#grad_fun["conv2d"] = (lambda g, x, weights, z: _conv2d_backward(g, x, weights, z.value))
-
-

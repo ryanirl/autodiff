@@ -40,6 +40,11 @@
 # addition) reduces the total runtime to: 6.444812059402466 seconds. That's nearly a
 # 30% increase in speed... YIKES
 # 
+# To expand on the idea started above. Just setting bias = False in the linear layers
+# doubles the performance of this project.
+# 
+# Speed without Bias: 5.2552649974823 seconds.
+# 
 
 
 from autodiff.tensor import Tensor
@@ -59,12 +64,21 @@ X = Tensor(X)
 y = Tensor(y[:, np.newaxis])
 
 model = nn.Sequential(
-    nn.Linear(2, 16),
+    nn.Linear(2, 16, bias = False),
     nn.ReLU(),
-    nn.Linear(16, 16),
+    nn.Linear(16, 16, bias = False),
     nn.ReLU(),
-    nn.Linear(16, 1)
+    nn.Linear(16, 1, bias = False)
 )
+
+# With bias is 2x slower.
+#model = nn.Sequential(
+#    nn.Linear(2, 16),
+#    nn.ReLU(),
+#    nn.Linear(16, 16),
+#    nn.ReLU(),
+#    nn.Linear(16, 1)
+#)
 
 optimizer = nn.SGD(model.parameters(), lr = LR)
 
@@ -120,7 +134,7 @@ plt.contourf(xx, yy, Z, levels = 1, cmap = plt.cm.ocean, alpha = 0.9)
 
 plt.scatter(X[:, 0], X[:, 1], c = y, cmap = plt.cm.ocean) 
 
-plt.show()
+#plt.show()
 
 
             

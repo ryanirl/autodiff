@@ -1,19 +1,3 @@
-from autodiff.tensor import Tensor
-import numpy as np
-
-
-class TensorBinaryCrossEntropy:
-    """
-    This is UNSTABLE. Recommend using BinaryCrossEntropyLogits instead if using
-    sigmoid function, or to just bypass the sigmoid fucntion and use
-    SigmoidBinaryCrossEntropy instead to save computation time.
-
-    """
-    def __call__(self, pred, actual):
-        a = pred * (actual + 1e-6) + (1 - pred) * (1 - actual + 1e-6)
-
-        return -np.log(a)
-
 
 class SigmoidBinaryCrossEntropy:
     """
@@ -24,12 +8,12 @@ class SigmoidBinaryCrossEntropy:
 
     """
     def __call__(self, pred, actual):
-        self.pred = pred
+        self.loss = pred.sigmoid_binary_cross_entropy(actual)
 
-        return self.pred.sigmoid_binary_cross_entropy(actual)
+        return self.loss
 
     def backward(self):
-        return self.pred.backward()
+        self.loss.backward()
 
 
 class BinaryCrossEntropy:
@@ -38,34 +22,32 @@ class BinaryCrossEntropy:
 
     """
     def __call__(self, pred, actual):
-        self.out = pred.stable_binary_cross_entropy_loss(actual)
-        return self.out
+        self.loss = pred.stable_binary_cross_entropy_loss(actual)
 
-    def backward(self): self.out.backward()
+        return self.loss
+
+    def backward(self): 
+        self.loss.backward()
 
 
 class CategoricalCrossEntropy:
     def __call__(self, pred, actual):
-        self.out = pred.categorical_cross_entropy_loss(actual)
-        return self.out 
+        self.loss = pred.categorical_cross_entropy_loss(actual)
 
-    def backward(self): self.out.backward()
+        return self.loss
+
+    def backward(self): 
+        self.loss.backward()
 
 
 class SoftmaxCategoricalCrossEntropy:
-    """
-    Looking at this I think I see a bug, though I'm going to
-    have to do some testing to make sure that it's not something
-    I did on purpose.
-
-    """
     def __call__(self, pred, actual):
-        self.pred = pred
+        self.loss = pred.softmax_categorical_cross_entropy(actual)
 
-        return self.pred.softmax_categorical_cross_entropy(actual)
+        return self.loss
 
     def backward(self):
-        return self.pred.backward()
+        self.loss.backward()
 
 
 class MSE:
@@ -83,8 +65,6 @@ class MSE:
 
 
 ##### ----- ALIAS ----- #####
-
-UnstableBinaryCrossEntropy = TensorBinaryCrossEntropy
 
 BinaryCrossEntropyLogits = BinaryCrossEntropy
 BinaryCrossEntropy = BinaryCrossEntropy

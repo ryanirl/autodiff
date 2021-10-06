@@ -1,5 +1,3 @@
-from autodiff.tensor import Tensor
-
 
 class Module:
     def __init__(self):
@@ -25,8 +23,6 @@ class Sequential(Module):
     
     def forward(self, X): 
         return self.__call__(X)
-
-
 
 
 

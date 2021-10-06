@@ -1,4 +1,3 @@
-from autodiff.tensor import Tensor
 import numpy as np
 
 

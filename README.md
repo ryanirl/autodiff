@@ -175,9 +175,6 @@ Plotting the decision boundry gives:
 
 
 
-<br />
-
-
 ---
 
 <!-- USER DEFINED PRIMITIVES -->
@@ -217,15 +214,16 @@ print("The gradient of y wrt x: {}".format(x.grad))
 ```
 
 
+<!-- OUTDATED USER DEFINED PRIMITVE METHOD -->
+### Outdated User Defined Primitive Method
+
+
 **NOTE:** This following method is outdated, I have a new method for adding
 primitive functions (as seen above), that is simpler and more intuitive.
 
 
 **Note #1:** I have a guide up, under `./documentation` for those who are interested
 in an in depth tutorial for adding new primitives
-
-
-**OLD WAY OF ADDING USER DEFINED PRIMITIVES:**
 
 
 ```python
@@ -258,6 +256,7 @@ print("The gradient of y wrt x: {}".format(x.grad))
 
 ```
 
+<br />
 
 <!-- LICENSE -->
 ## License
