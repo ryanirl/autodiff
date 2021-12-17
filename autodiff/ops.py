@@ -1,90 +1,149 @@
-from collections import defaultdict
+from autodiff.utils import broadcast
 import numpy as np
 
 
-value_fun = defaultdict(lambda: "ERROR")
-grad_fun = defaultdict(lambda: "ERROR")
+@broadcast
+class Add:
+    def forward(x, y):
+        return np.add(x.value, y.value)
 
+    def backward(g, x, y, z):
+        return [g, g]
 
-### --- Unbroadcasting Function --- ### 
+@broadcast
+class Sub:
+    def forward(x, y):
+        return x.value - y.value
 
-# unbroadcasting is extremely slow. Removing it increases speed by 30%
-def _unbroadcast(grad, axis, shape): return np.reshape(np.sum(grad, axis = axis, keepdims = True), shape)
+    def backward(g, x, y, z):
+        return [g, -g]
 
-# For reference using this lambda function instead is a direct
-# grad_fun["add"] = (lambda g, x, y, z: [g, g])
-# 30% performance increase on `bench.py`
+@broadcast
+class Mul:
+    def forward(x, y):
+        return x.value * y.value
 
+    def backward(g, x, y, z):
+        g_x = g * y.value
+        g_y = g * x.value
 
-### --- Primitive Mathematical Operators --- ###
+        return [g_x, g_y]
 
-value_fun["add"] = (lambda x, y: x.value + y.value)
-grad_fun["add"] = (lambda g, x, y, z: [_unbroadcast(g, z._unbroadcast_axis[0], x.shape), 
-                                       _unbroadcast(g, z._unbroadcast_axis[1], y.shape)])
+@broadcast
+class Div:
+    def forward(x, y):
+        return x.value / y.value
 
-value_fun["sub"] = (lambda x, y: x.value - y.value)
-grad_fun["sub"] = (lambda g, x, y, z: [_unbroadcast(g, z._unbroadcast_axis[0], x.shape), 
-                                       _unbroadcast(-g, z._unbroadcast_axis[1], y.shape)])
+    def backward(g, x, y, z):
+        g_x = g * (1.0 / y.value)
+        g_y = g * (-x.value / (y.value ** 2))
 
-value_fun["mul"] = (lambda x, y: x.value * y.value)
-grad_fun["mul"] = (lambda g, x, y, z: [_unbroadcast(g * y.value, z._unbroadcast_axis[0], x.shape), 
-                                       _unbroadcast(g * x.value, z._unbroadcast_axis[1], y.shape)])
+        return [g_x, g_y]
 
-# NOTE: Does not take the derivative W.R.T. 'y'
-value_fun["pow"] = (lambda x, y: x.value ** y.value)
-grad_fun["pow"] = (lambda g, x, y, z: [_unbroadcast(g * y.value * np.power(x.value, y.value - 1), z._unbroadcast_axis[0], x.shape), 
-                                       0])
+@broadcast
+class Pow:
+    def forward(x, y):
+        return x.value ** y.value
 
-value_fun["div"] = (lambda x, y: x.value / y.value)
-grad_fun["div"] = (lambda g, x, y, z: [_unbroadcast(g * (1.0 / y.value), z._unbroadcast_axis[0], x.shape), 
-                                       _unbroadcast(g * (-x.value / (y.value ** 2)), z._unbroadcast_axis[1], y.shape)])
+    def backward(g, x, y, z):
+        # Note: We do not compute the 'y' grad.
+        g_x = g * y.value * np.power(x.value, y.value - 1)
+        g_y = np.array([[0]])
+
+        return [g_x, g_y]
 
 
 ### --- Basic Activation Function Ops --- ###
 
-value_fun["sigmoid"] = (lambda x: 1.0 / (1.0 + np.exp(-x.value))) 
-grad_fun["sigmoid"] = (lambda g, x, z: [g * (z.value * (1.0 - z.value))])
+class Sigmoid:
+    def forward(x):
+        return 1.0 / (1.0 + np.exp(-x.value))
 
-value_fun["relu"] = (lambda x: np.maximum(x.value, 0)) 
-grad_fun["relu"] = (lambda g, x, z: [g * (x.value > 0)]) 
+    def backward(g, x, z):
+        return [g * (z.value * (1.0 - z.value))]
 
-value_fun["leaky_relu"] = (lambda x: np.maximum(x.value, 0.1 * x.value)) 
-grad_fun["leaky_relu"] = (lambda g, x, z: [g * np.where(x.value > 0, 1, 0.1)])
+class ReLU:
+    def forward(x):
+        return np.maximum(x.value, 0)
 
-value_fun["tanh"] = (lambda x: (np.exp(x) - np.exp(-x)) / (np.exp(x) + np.exp(-x)))
-grad_fun["tanh"] = (lambda g, x, z: [g * (1.0 - (z.value ** 2))])
+    def backward(g, x, z):
+        return [g * (x.value > 0)]
+
+class Leaky_ReLU:
+    def forward(x):
+        return np.maximum(x.value, 0.1 * x.value)
+
+    def backward(g, x, z):
+        return [g * np.where(x.value > 0, 1, 0.1)]
+
+class TanH:
+    def forward(x):
+        return (np.exp(x) - np.exp(-x)) / (np.exp(x) + np.exp(-x))
+
+    def backward(g, x, z):
+        return [g * (1.0 - (z.value ** 2))]
 
 
 ### --- Primitive Matrix Operations --- ###
 
-value_fun["sum"] = (lambda x: np.sum(x.value, axis = x.axis, keepdims = x.keepdims))
-grad_fun["sum"] = (lambda g, x, z: [np.broadcast_to(g, x.shape_in)])
+class Sum:
+    def forward(x):
+        return np.sum(x.value, axis = x.axis, keepdims = x.keepdims)
 
-#value_fun["dot"] = (lambda x, y: np.dot(x.value, y.value))
-value_fun["dot"] = (lambda x, y: x.value.dot(y.value))
-grad_fun["dot"] = (lambda g, x, y, z: [g.dot(y.value.T), x.value.T.dot(g)])
-#grad_fun["dot"] = (lambda g, x, y, z: [np.dot(g, y.value.T), np.dot(x.value.T, g)])
+    def backward(g, x, z):
+        return [np.broadcast_to(g, x.shape_in)]
 
-value_fun["transpose"] = (lambda x: x.value.T)
-grad_fun["transpose"] = (lambda g, x, z: [g.T])
+class Dot:
+    def forward(x, y):
+        return x.value.dot(y.value)
 
-value_fun["reshape"] = (lambda x: np.reshape(x.value, x.new_shape))
-grad_fun["reshape"] = (lambda g, x, z: [g.reshape(x.old_shape)])
+    def backward(g, x, y, z):
+        return [g.dot(y.value.T), x.value.T.dot(g)]
+
+class Transpose:
+    def forward(x):
+        return x.value.T
+
+    def backward(g, x, z):
+        return [g.T]
+
+class Reshape:
+    def forward(x):
+        return np.reshape(x.value, x.new_shape)
+
+    def backward(g, x, z):
+        return [g.reshape(x.old_shape)]
 
 
 ### --- Elem-Wise Ops --- ###
 
-value_fun["log"] = (lambda x: np.log(x.value))
-grad_fun["log"] = (lambda g, x, z: [g / x.value])
+class Log:
+    def forward(x):
+        return np.log(x.value)
 
-value_fun["exp"] = (lambda x: (np.exp(x.value)))
-grad_fun["exp"] = (lambda g, x, z: [g * z.value])
+    def backward(g, x, z):
+        return [g / x.value]
 
-value_fun["abs"] = (lambda x: np.abs(x.value))
-grad_fun["abs"] = (lambda g, x, z: [g * (z.value / np.where(x.value == 0, x.value, 1))])
+class Exp:
+    def forward(x):
+        return np.exp(x.value)
 
-value_fun["max"] = (lambda x: np.max(x.value))
-grad_fun["max"] = (lambda g, x, z: [g * (x.value == z.value) / np.sum(x.value == z.value)])
+    def backward(g, x, z):
+        return [g * z.value]
+
+class Abs:
+    def forward(x):
+        return np.abs(x.value)
+
+    def backward(g, x, z):
+        return [g * (z.value / np.where(x.value == 0, x.value, 1))]
+
+class Max:
+    def forward(x):
+        return np.max(x.value)
+
+    def backward(g, x, z):
+        return [g * (x.value == z.value) / np.sum(x.value == z.value)]
 
 
 

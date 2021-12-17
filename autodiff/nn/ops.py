@@ -3,28 +3,6 @@ from autodiff.nn.utils import to_logits, clip_stable, stable_bce
 
 import numpy as np
 
-### --- autodiff/nn/ops.py --- ###
-#
-# TODO:
-#   - Conv2D Reimplement
-# 
-#
-# NN OPS:
-#   Activation Functions:
-#       - Softmax
-#
-#   Loss Functions
-#       - Categorical Cross Entropy (one-hot)
-#       - Binary Cross Entropy
-# 
-#       Loss Function w/ Activation (bypass)
-#           - Sigmoid Binary Cross Entropy
-#               - EX: Logistic Regression
-# 
-#           - Softmax Categorical Cross Entropy
-# 
-
-
 
 ### --- ACTIVATION FUNCTIONS --- ###  
 

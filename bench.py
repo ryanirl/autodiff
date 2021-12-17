@@ -64,11 +64,11 @@ X = Tensor(X)
 y = Tensor(y[:, np.newaxis])
 
 model = nn.Sequential(
-    nn.Linear(2, 16, bias = False),
+    nn.Linear(2, 16),
     nn.ReLU(),
-    nn.Linear(16, 16, bias = False),
+    nn.Linear(16, 16),
     nn.ReLU(),
-    nn.Linear(16, 1, bias = False)
+    nn.Linear(16, 1)
 )
 
 # With bias is 2x slower.

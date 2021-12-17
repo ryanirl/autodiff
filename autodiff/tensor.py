@@ -1,5 +1,6 @@
-from autodiff.ops import grad_fun, value_fun
-from autodiff.utils import check, broadcasted
+from autodiff.utils import check
+from autodiff.ops import *
+
 from inspect import signature
 import numpy as np
 
@@ -10,7 +11,7 @@ class Tensor:
         self.requires_grad = requires_grad
         self.grad = np.zeros(np.shape(self.value))
 
-        self._op = "LEAF"
+        self._op = "leaf"
         self._forward = lambda: self.value
         self._outgrad = lambda x, y: () 
         self._children = _children
@@ -30,49 +31,38 @@ class Tensor:
     def __neg__(self):
         return self * -1
 
-    @broadcasted
     def __add__(self, other):
-        return OP("add", self, check(other, Tensor))
+        return OP(Add, self, check(other, Tensor))
 
-    @broadcasted
     def __radd__(self, other):
-        return OP("add", check(other, Tensor), self)
+        return OP(Add, check(other, Tensor), self)
 
-    @broadcasted
     def __sub__(self, other):
-        return OP("sub", self, check(other, Tensor))
+        return OP(Sub, self, check(other, Tensor))
 
-    @broadcasted
     def __rsub__(self, other): 
-        return OP("sub", check(other, Tensor), self)
+        return OP(Sub, check(other, Tensor), self)
 
-    @broadcasted
     def __pow__(self, other):
-        return OP("pow", self, check(other, Tensor))
+        return OP(Pow, self, check(other, Tensor))
 
-    @broadcasted
     def __mul__(self, other):
-        return OP("mul", self, check(other, Tensor))
+        return OP(Mul, self, check(other, Tensor))
 
-    @broadcasted
     def __rmul__(self, other):
-        return OP("mul", check(other, Tensor), self)
+        return OP(Mul, check(other, Tensor), self)
 
-    @broadcasted
     def __div__(self, other):
-        return OP("div", self, check(other, Tensor))
+        return OP(Div, self, check(other, Tensor))
 
-    @broadcasted
     def __rdiv__(self, other):
-        return OP("div", check(other, Tensor), self)
+        return OP(Div, check(other, Tensor), self)
 
-    @broadcasted
     def __truediv__(self, other):
-        return OP("div", self, check(other, Tensor))
+        return OP(Div, self, check(other, Tensor))
 
-    @broadcasted
     def __rtruediv__(self, other):
-        return OP("div", check(other, Tensor), self)
+        return OP(Div, check(other, Tensor), self)
 
 
     ### --- Properties --- ###
@@ -83,7 +73,7 @@ class Tensor:
 
     @property
     def T(self):
-        return OP("transpose", self)
+        return OP(Transpose, self)
 
 
     ### --- Class Methods --- ###
@@ -119,48 +109,48 @@ class Tensor:
         self.axis = axis
         self.shape_in = self.shape
         self.keepdims = keepdims
-        return OP("sum", self)
+        return OP(Sum, self)
 
     def transpose(self): 
-        return OP("transpose", self)
+        return OP(Transpose, self)
 
     def reshape(self, new_shape):
         self.old_shape = self.shape
         self.new_shape = new_shape
-        return OP("reshape", self)
+        return OP(Reshape, self)
 
     def dot(self, other):
-        return OP("dot", self, check(other, Tensor))
+        return OP(Dot, self, check(other, Tensor))
 
     
     ### --- Elem-Wise Ops --- ### 
 
     def log(self):
-        return OP("log", self)
+        return OP(Log, self)
 
     def exp(self):
-        return OP("exp", self)
+        return OP(Exp, self)
 
     def abs(self):
-        return OP("abs", self)
+        return OP(Abs, self)
 
     def max(self):
-        return OP("max", self)
+        return OP(Max, self)
 
 
     ### --- Activation Functions --- ###
 
     def sigmoid(self):
-        return OP("sigmoid", self)
+        return OP(Sigmoid, self)
 
     def relu(self):
-        return OP("relu", self)
+        return OP(ReLU, self)
 
     def leaky_relu(self):
-        return OP("leaky_relu", self)
+        return OP(Leaky_Relu, self)
 
     def tanh(self):
-        return OP("tanh", self)
+        return OP(TanH, self)
 
 
     ### --- Backprop & Computation Graph Functions --- ###
@@ -218,28 +208,26 @@ class Tensor:
 ### ----- OP BUILDER ----- ### 
 
 def OP(op, *tensors):
-    value = value_fun[op](*tensors)
+    value = op.forward(*tensors)
 
-    requires_grad = True if sum([tensor.requires_grad for tensor in tensors]) > 0 else False
+#    requires_grad = True if sum([tensor.requires_grad for tensor in tensors]) > 0 else False
+    requires_grad = True if np.all([tensor.requires_grad for tensor in tensors]) else False
 
     output_tensor = Tensor(value, tensors, requires_grad)
 
-    output_tensor._outgrad = grad_fun[op]
-    output_tensor._forward = value_fun[op]
-    output_tensor._op = op
+    output_tensor._outgrad = op.backward
+    output_tensor._forward = op.forward
+    output_tensor._op = op.__name__.lower()
 
     return output_tensor
 
 
 class primitive:
     def __new__(cls, *args, **kwargs):
-        value_fun[cls.__name__] = (cls.forward)
-        grad_fun[cls.__name__] = (cls.backward)
-
         parameters = list(signature(cls.forward).parameters)
-        parameters[0] = 'self'
+        parameters[0] = "self"
 
-        method = lambda *parameters: OP(cls.__name__, *parameters)
+        method = lambda *parameters: OP(cls, *parameters)
 
         setattr(Tensor, cls.__name__, method) 
 

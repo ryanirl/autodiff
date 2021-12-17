@@ -1,6 +1,6 @@
 import numpy as np
 from autodiff.tensor import Tensor, OP
-from autodiff.ops import grad_fun, value_fun
+#from autodiff.ops import grad_fun, value_fun
 from autodiff.utils import primitive, check
 import autodiff.nn as nn
 import time 
@@ -108,39 +108,12 @@ def speedtest():
 
     print(f"Runtime of the program is {end - start}")
 
-def test3():
-    def e(x):
-        """
-        You don't need this I am just using it to simplify
-        the value function.
-
-        """
-        return np.exp(x.value)
-
-    value_fun["tanh"] = (lambda x: (e(x) - e(-x)) / (e(x) + e(-x)))
-
-    # multiplying each gradient by "g" is requied by the chain rule
-    grad_fun["tanh"] = (lambda g, x, z: [(g * (1.0 - (z.value ** 2)))])
-
-    # Check(x, Tenor) just garentees that some x is not Tensor
-    @primitive(Tensor)
-    def tanh(self):
-        return OP("tanh", self);
-
-    x = Tensor([1, 2, 3])
-    y = x.tanh()
-
-    y.backward()
-
-    print(f"The gradient of x: {x.grad}")
-
 
 
 if __name__ == "__main__":
     softmaxCCE()
     test0()
     speedtest()
-    test3()
 
 
 

@@ -6,7 +6,7 @@ import numpy as np
 def check(x, Type): 
     return x if isinstance(x, Type) else Type(x)
 
-
+# OUTDATED
 def primitive(Class):
     def register_methods(method):
         setattr(Class, method.__name__, method) 
@@ -15,21 +15,7 @@ def primitive(Class):
     return register_methods 
 
 
-def broadcasted(func): 
-    def _op(x, y):
-        output_tensor = func(x, y)
-
-        x = output_tensor._children[0]
-        y = output_tensor._children[1]
-
-        x_axis = unbroadcast_axes(output_tensor.shape, x.shape)
-        y_axis = unbroadcast_axes(output_tensor.shape, y.shape)
-
-        output_tensor._unbroadcast_axis = [x_axis, y_axis]
-
-        return output_tensor
-    return _op
-
+### --- Unbroadcasting Function --- ### 
 
 def unbroadcast_axes(shape_in, shape_out):
     """
@@ -60,6 +46,41 @@ def unbroadcast_axes(shape_in, shape_out):
             reduction_axes += [i]
 
     return tuple(reduction_axes)
+
+def _unbroadcast(grad, axis, shape): 
+    return np.reshape(np.sum(grad, axis = axis, keepdims = True), shape)
+
+def broadcast(cls):
+    class Function:
+        def forward(x, y):
+            x.broadcasted, y.broadcasted = False, False
+
+            out = cls.forward(x, y)
+
+            if x.shape != out.shape:
+                x.broadcasted = True
+                x.unbroadcast_axes = unbroadcast_axes(out.shape, x.shape)
+
+            if y.shape != out.shape:
+                y.broadcasted = True
+                y.unbroadcast_axes = unbroadcast_axes(out.shape, y.shape)
+
+            return out
+
+        def backward(g, x, y, z):
+            g_x, g_y = cls.backward(g, x, y, z)
+
+            if x.broadcasted:
+                g_x = _unbroadcast(g_x, x.unbroadcast_axes, x.shape)
+
+            if y.broadcasted:
+                g_y = _unbroadcast(g_y, y.unbroadcast_axes, y.shape)
+
+            return [g_x, g_y]
+          
+    
+    Function.__name__ = cls.__name__
+    return Function 
 
 
 

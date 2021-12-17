@@ -13,6 +13,14 @@ class Optimizer:
 #    def add_parameters(self, new_param):
 #        self.parameters.append(new_param)
 
+class SGD(Optimizer):
+    def __init__(self, parameters, lr = 0.01):
+        super().__init__(parameters, lr)
+
+    def step(self):
+        for param in self.parameters:
+            param.value = param.value - (self.lr * param.grad)
+
 
 class SGDMomentum(Optimizer):
     def __init__(self, parameters, lr = 0.01, momentum = 0.9, nestrov = False):
@@ -36,15 +44,6 @@ class SGDMomentum(Optimizer):
                 self.velocity[i] = self.momentum * self.velocity[i] - (self.lr * param.grad)
 
                 param.value = param.value + (-self.momentum * old_velocity + ((1.0 + self.momentum) * self.velocity[i]))
-
-
-class SGD(Optimizer):
-    def __init__(self, parameters, lr = 0.01):
-        super().__init__(parameters, lr)
-
-    def step(self):
-        for param in self.parameters:
-            param.value = param.value - (self.lr * param.grad)
 
 
 class RMSProp(Optimizer):
