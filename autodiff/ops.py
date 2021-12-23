@@ -87,11 +87,11 @@ class TanH:
 ### --- Primitive Matrix Operations --- ###
 
 class Sum:
-    def forward(x):
-        return np.sum(x.value, axis = x.axis, keepdims = x.keepdims)
+    def forward(x, **kwargs):
+        return np.sum(x.value, **kwargs) 
 
     def backward(g, x, z):
-        return [np.broadcast_to(g, x.shape_in)]
+        return [np.broadcast_to(g, x.shape)]
 
 class Dot:
     def forward(x, y):
@@ -108,11 +108,11 @@ class Transpose:
         return [g.T]
 
 class Reshape:
-    def forward(x):
-        return np.reshape(x.value, x.new_shape)
+    def forward(x, *shape, **kwargs):
+        return np.reshape(x.value, shape, **kwargs)
 
     def backward(g, x, z):
-        return [g.reshape(x.old_shape)]
+        return [g.reshape(x.shape)]
 
 
 ### --- Elem-Wise Ops --- ###

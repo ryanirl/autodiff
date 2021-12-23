@@ -15,7 +15,7 @@ def primitive(Class):
     return register_methods 
 
 
-### --- Unbroadcasting Function --- ### 
+### --- Unbroadcasting Functions --- ### 
 
 def unbroadcast_axes(shape_in, shape_out):
     """
@@ -77,9 +77,9 @@ def broadcast(cls):
                 g_y = _unbroadcast(g_y, y.unbroadcast_axes, y.shape)
 
             return [g_x, g_y]
-          
     
     Function.__name__ = cls.__name__
+
     return Function 
 
 

@@ -134,7 +134,7 @@ plt.contourf(xx, yy, Z, levels = 1, cmap = plt.cm.ocean, alpha = 0.9)
 
 plt.scatter(X[:, 0], X[:, 1], c = y, cmap = plt.cm.ocean) 
 
-#plt.show()
+plt.show()
 
 
             

@@ -105,19 +105,14 @@ class Tensor:
 
     ### --- Matrix Ops --- ###
 
-    def sum(self, axis = None, keepdims = True): 
-        self.axis = axis
-        self.shape_in = self.shape
-        self.keepdims = keepdims
-        return OP(Sum, self)
+    def sum(self, **kwargs):
+        return OP(Sum, self, **kwargs)
 
     def transpose(self): 
         return OP(Transpose, self)
 
-    def reshape(self, new_shape):
-        self.old_shape = self.shape
-        self.new_shape = new_shape
-        return OP(Reshape, self)
+    def reshape(self, *shape, **kwargs):
+        return OP(Reshape, self, *shape, **kwargs)
 
     def dot(self, other):
         return OP(Dot, self, check(other, Tensor))
@@ -207,8 +202,10 @@ class Tensor:
 
 ### ----- OP BUILDER ----- ### 
 
-def OP(op, *tensors):
-    value = op.forward(*tensors)
+def OP(op, *args, **kwargs):
+    value = op.forward(*args, **kwargs)
+
+    tensors = [arg for arg in args if isinstance(arg, Tensor)]
 
 #    requires_grad = True if sum([tensor.requires_grad for tensor in tensors]) > 0 else False
     requires_grad = True if np.all([tensor.requires_grad for tensor in tensors]) else False
