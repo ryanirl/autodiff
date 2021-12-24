@@ -10,8 +10,6 @@ class Optimizer:
         for param in self.parameters:
             param.grad = 0
 
-#    def add_parameters(self, new_param):
-#        self.parameters.append(new_param)
 
 class SGD(Optimizer):
     def __init__(self, parameters, lr = 0.01):

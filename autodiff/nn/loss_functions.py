@@ -55,29 +55,29 @@ class MSE:
         return 0.5 * ((pred - actual) ** 2)
 
 
-
-####### -------------- MAE LOSS (L1) --------------  ########
-#############################################################
-
-####### -------------- HINGE LOSS --------------  ########
-##########################################################
+# TODO:
+    # MAE Loss (L1)
+    # Hinge Loss
 
 
 
-##### ----- ALIAS ----- #####
+
+##### ----- ALIASES ----- #####
 
 BinaryCrossEntropyLogits = BinaryCrossEntropy
-BinaryCrossEntropy = BinaryCrossEntropy
+BinaryCrossEntropy       = BinaryCrossEntropy
 StableBinaryCrossEntropy = BinaryCrossEntropy
-BCE = BinaryCrossEntropy
-BinaryCE = BinaryCrossEntropy
+BCE                      = BinaryCrossEntropy
+BinaryCE                 = BinaryCrossEntropy
 
-CrossEntropy = CategoricalCrossEntropy
-CCE = CategoricalCrossEntropy
+
+CrossEntropy   = CategoricalCrossEntropy
+CCE            = CategoricalCrossEntropy
 Categorical_CE = CategoricalCrossEntropy
 
+
 SquaredLoss = MSE
-L2 = MSE
+L2          = MSE
 
 
 

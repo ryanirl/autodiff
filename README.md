@@ -184,23 +184,20 @@ You can even define your own primitive functions. An example of a user defined
 primitive function may be: 
 
 ```python
-from autodiff.tensor import Tensor, primitive
+from autodiff.tensor import Tensor, register
 import numpy as np
 
 # For simplicity
 def e(x): return np.exp(x.value)
 
-
-class tanh(primitive):
+@register
+class tanh:
     def forward(x):
         return (e(x) - e(-x)) / (e(x) + e(-x))
 
     def backward(g, x, z):
         return [g * (1.0 - (z.value ** 2))]
 
-
-# Must do this so it 'registers'
-tanh()
 
 x = Tensor([1, 2, 3])
 y = x.tanh()

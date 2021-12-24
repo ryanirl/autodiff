@@ -219,7 +219,7 @@ def OP(op, *args, **kwargs):
     return output_tensor
 
 
-class primitive:
+class primitive():
     def __new__(cls, *args, **kwargs):
         parameters = list(signature(cls.forward).parameters)
         parameters[0] = "self"
@@ -231,6 +231,12 @@ class primitive:
         return super().__new__(cls)
 
 
+def register(cls):
+    cls = type(cls.__name__, (cls, primitive), {})
+
+    cls()
+
+    return cls
 
 
 
