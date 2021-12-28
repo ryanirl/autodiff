@@ -1,18 +1,8 @@
 import numpy as np
 
 
-### --- Tensor Utils --- ###
-
 def check(x, Type): 
     return x if isinstance(x, Type) else Type(x)
-
-# OUTDATED
-def primitive(Class):
-    def register_methods(method):
-        setattr(Class, method.__name__, method) 
-        return method 
-
-    return register_methods 
 
 
 ### --- Unbroadcasting Functions --- ### 
@@ -47,8 +37,10 @@ def unbroadcast_axes(shape_in, shape_out):
 
     return tuple(reduction_axes)
 
+
 def _unbroadcast(grad, axis, shape): 
     return np.reshape(np.sum(grad, axis = axis, keepdims = True), shape)
+
 
 def broadcast(cls):
     class Function:

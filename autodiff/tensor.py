@@ -4,6 +4,7 @@ from autodiff.ops import *
 from inspect import signature
 import numpy as np
 
+# Helper Util
 
 class Tensor:
     def __init__(self, value, _children = [], requires_grad = True):

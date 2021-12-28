@@ -2,6 +2,8 @@
 
 ## WORK IN PROGESS, PROBABLY DON'T READ THIS
 
+**This is actually outdated, don't use.**
+
 
 ---
 

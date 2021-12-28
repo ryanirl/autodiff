@@ -1,7 +1,7 @@
 import numpy as np
 from autodiff.tensor import Tensor, OP
 #from autodiff.ops import grad_fun, value_fun
-from autodiff.utils import primitive, check
+from autodiff.utils import check
 import autodiff.nn as nn
 import time 
 

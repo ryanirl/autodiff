@@ -37,7 +37,7 @@ Table of Contents
         * Basic Usage
         * Building Simple MLP
         * User Defined Primitives
-
+   * [Inspiration](#Inpiration)
    * [Liscence](#liscence)
 
 
@@ -97,7 +97,7 @@ Not tested on Python2.
 ---
 
 <!-- USAGE -->
-## USAGE 
+## Usage
 
 
 <!-- BASIC USAGE -->
@@ -120,9 +120,9 @@ x = y ** 2
 # This is where the magic happens
 x.backward()
 
-print("value: ({})".format(x.value))
-print("grad wrt A: ({})".format(a.grad))
-print("grad wrt B: ({})".format(b.grad))
+print("value of x: ({})".format(x.value))
+print("grad of x wrt a: ({})".format(a.grad))
+print("grad of x wrt b: ({})".format(b.grad))
 
 ```
 
@@ -135,6 +135,9 @@ Bulding an MLP to do multiclass Softmax classification is as simple as this:
 This example in full detail can be found here: https://github.com/ryanirl/autodiff/blob/main/examples/spiral_classification.py
 
 ```python
+from autodiff.tensor import Tensor
+import autodiff.nn as nn
+
 # Instantiating the Model
 model = nn.Sequential(
     nn.Linear(2, 100),
@@ -210,48 +213,45 @@ print("The gradient of y wrt x: {}".format(x.grad))
 
 ```
 
-
-<!-- OUTDATED USER DEFINED PRIMITVE METHOD -->
-### Outdated User Defined Primitive Method
+<br />
 
 
-**NOTE:** This following method is outdated, I have a new method for adding
-primitive functions (as seen above), that is simpler and more intuitive.
+<!-- Inspiration -->
+## Inspiration:
+
+I initially built Autodiff to help me understand backpropagation and what goes
+into making a large library such as Tensorflow or PyTorch. Now that I have a
+solid understanding of backpropagation and modern machine learning libraries I
+continue to add on to this project to expand my knowledge in how certain ideas
+in Machine / Deep Learning work at the core. Today, I could pip install
+detectron2 and transfer learn a Mask R-CNN using a pretrained ResNet50 backbone 
+on the COCO Dataset to a specialized task of detecting ornements on a Christmas 
+tree (writting this on December 26th) using about 15 lines of code and have a well 
+performing SOTA instance segmentation model. Though however convinient that
+level of abstraction may be for certain tasks that you want to whip up in an
+hour or two, it's also dangerous. It's dangerous because as developers if we
+are entrusted with training one of these models but you don't necessarily
+understand the underlying technology of the model your training then your bound 
+to make ineffecient decisions during the training and pre/post processing stages.
+I myself am guily of training models I don't necessarily understand and so I keep 
+Autodiff as a reminder to not give into that convenience without first understanding 
+the underlying technology.
 
 
-**Note #1:** I have a guide up, under `./documentation` for those who are interested
-in an in depth tutorial for adding new primitives
+Autodiff currently works in 2 levels. Level 1 is largely complete, minus some small
+things I will inevitably end up moving around in the future. Level 2 is more "Deep 
+Learning", is very messy, and is basically a rough draft.
 
+**Level 1:** is the base functionality of Autodiff, this level defined the
+Tensor class, adds base primitive operators, and adds a decorator so others can
+create custom "primitive" ops on top of Autodiff.
 
-```python
+**Level 2:** is essentially everything inside of the NN folder. Level 2 adds on
+top of Autodiff by using the "register" decorator in Level 1 Autodiff to add 
+additional "primitive" (would it be primitive) operators such as certain loss 
+functions, activation functions, and more. Level 2 is very much so a work in 
+progress for whenever I feel like working on it.
 
-import numpy as np
-from tensor import Tensor, OP
-from ops import grad_fun, value_fun
-from utils import primitive, check
-
-# NOTE: TANH HAS ALREADY BEEN IMPLEMENTED, THOUGH THIS IS HOW IT
-# WOULD WORK IF IT WEREN'T ALREADY 
-
-
-value_fun["tanh"] = (lambda x: (e(x) - e(-x)) / (e(x) + e(-x)))
-
-# multiplying each gradient by "g" is requied by the chain rule
-grad_fun["tanh"] = (lambda g, x, z: [(g * (1.0 - (z.value ** 2)))])
-
-@primitive(Tensor)
-def tanh(self):
-    return OP("tanh", self);
-
-
-x = Tensor([1, 2, 3])
-y = x.tanh()
-
-y.backward()
-
-print("The gradient of y wrt x: {}".format(x.grad))
-
-```
 
 <br />
 
@@ -259,4 +259,7 @@ print("The gradient of y wrt x: {}".format(x.grad))
 ## License
 
 Distributed under the MIT License. See `LICENSE` for more information.
+
+
+
 
