@@ -8,15 +8,17 @@ class Linear(Module):
 
         self.weight = Tensor.uniform(dims_in, dims_out)
         self.params.append(self.weight)
-        self.needs_bias = bias
 
+        self.needs_bias = bias
         if self.needs_bias == True: 
             self.bias = Tensor.uniform(dims_out)
             self.params.append(self.bias)
 
     def __call__(self, X):
-        if self.needs_bias: return X.dot(self.weight) + self.bias
-        else: return X.dot(self.weight)
+        output = X.dot(self.weight)
+
+        if self.needs_bias: return output + self.bias
+        else: return output
 
 
 

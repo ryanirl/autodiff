@@ -24,6 +24,19 @@ Though there are various methods to impliment reverse-mode automatic differentia
 AutoDiff works via Python's Operator Overloading abilities which is by far the
 simplier and more intuitive of the methods. 
 
+Autodiff currently works in 2 levels. Level 1 is largely complete, minus some small
+things I will inevitably end up moving around in the future. Level 2 is more "Deep 
+Learning", is very messy, and is basically a rough draft.
+
+**Level 1:** is the base functionality of Autodiff, this level defined the
+Tensor class, supports primitive operators, and includes a decorator that 
+allows others to create custom "primitive" ops on top of Autodiff.
+
+**Level 2:** is essentially everything inside of the NN folder. Level 2 adds on
+top of Autodiff by using the "register" decorator in Level 1 Autodiff to define 
+additional "primitive" (would it be primitive?) operators such as certain loss 
+functions, activation functions, and more. Level 2 is very much so a work in 
+progress.
 
 ---
 
@@ -215,6 +228,8 @@ print("The gradient of y wrt x: {}".format(x.grad))
 
 <br />
 
+---
+
 
 <!-- Inspiration -->
 ## Inspiration:
@@ -238,19 +253,6 @@ Autodiff as a reminder to not give into that convenience without first understan
 the underlying technology.
 
 
-Autodiff currently works in 2 levels. Level 1 is largely complete, minus some small
-things I will inevitably end up moving around in the future. Level 2 is more "Deep 
-Learning", is very messy, and is basically a rough draft.
-
-**Level 1:** is the base functionality of Autodiff, this level defined the
-Tensor class, adds base primitive operators, and adds a decorator so others can
-create custom "primitive" ops on top of Autodiff.
-
-**Level 2:** is essentially everything inside of the NN folder. Level 2 adds on
-top of Autodiff by using the "register" decorator in Level 1 Autodiff to add 
-additional "primitive" (would it be primitive) operators such as certain loss 
-functions, activation functions, and more. Level 2 is very much so a work in 
-progress for whenever I feel like working on it.
 
 
 <br />

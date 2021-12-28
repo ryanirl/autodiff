@@ -3,30 +3,11 @@
 # I learned about the stable BCE from here:
 # https://rafayak.medium.com/how-do-tensorflow-and-keras-implement-binary-classification-and-the-binary-cross-entropy-function-e9413826da7
 # -----------------------------------------
-
 from autodiff.nn.utils import to_logits, clip_stable, stable_bce
 from autodiff.tensor import register
 
 import numpy as np
 
-
-### --- ACTIVATION FUNCTIONS --- ###  
-
-@register
-class softmax:
-    def forward(x):
-        a = np.exp(x.value - np.max(x.value))
-
-        return a / np.sum(a, axis = 1, keepdims = True)
-
-    def backward(g, x, z):
-        a = z.value[..., None] * z.value[:, None, :]
-        b = np.einsum('ijk,ik->ij', a, g)
-
-        return [g * z.value - b]
-
-
-### --- LOSS FUNCTIONS --- ### 
 
 @register
 class categorical_cross_entropy_loss:
