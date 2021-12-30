@@ -71,14 +71,6 @@ model = nn.Sequential(
     nn.Linear(16, 1)
 )
 
-# With bias is 2x slower.
-#model = nn.Sequential(
-#    nn.Linear(2, 16),
-#    nn.ReLU(),
-#    nn.Linear(16, 16),
-#    nn.ReLU(),
-#    nn.Linear(16, 1)
-#)
 
 optimizer = nn.SGD(model.parameters(), lr = LR)
 
@@ -102,7 +94,6 @@ for i in range(EPOCHS):
 print("{} EPOCHS Computed in: {}".format(EPOCHS, time.time() - start))
 
 #pr.print_stats()
-
 
 
 

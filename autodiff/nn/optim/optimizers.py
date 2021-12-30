@@ -12,59 +12,33 @@ class SGD(Optimizer):
             param.value = param.value - (self.lr * param.grad)
 
 
-class SGDMomentum(Optimizer):
-    def __init__(self, parameters, lr = 0.01, momentum = 0.9, nestrov = False):
-        super().__init__(parameters, lr)
-        self.momentum = momentum
-        self.nestrov = nestrov
-
-        self.velocity = np.array([np.zeros(tensor.shape) for tensor in parameters])
-
-
-    def step(self):
-        for i, param in enumerate(self.parameters):
-            if not self.nestrov:
-                self.velocity[i] = self.velocity[i] * self.momentum + param.grad
-
-                param.value = param.value - self.lr * (param.grad + self.velocity[i])
-
-            else: 
-                old_velocity = self.velocity[i]
-
-                self.velocity[i] = self.momentum * self.velocity[i] - (self.lr * param.grad)
-
-                param.value = param.value + (-self.momentum * old_velocity + ((1.0 + self.momentum) * self.velocity[i]))
-
-
 class RMSProp(Optimizer):
     def __init__(self, parameters, lr = 0.01, eps = 1e-7, decay_rate = 0.99):
         super().__init__(parameters, lr)
-        self.eps = eps
+        self.grad_squared = [np.zeros(tensor.shape) for tensor in parameters]
         self.decay_rate = 0.99
-        self.grad_squared = np.array([np.zeros(tensor.shape) for tensor in parameters])
+        self.eps = eps
 
     def step(self):
         for i, param in enumerate(self.parameters):
-            grad = param.grad
+            self.grad_squared[i] = self.decay_rate * self.grad_squared[i] + (1.0 - self.decay_rate) * (param.grad * param.grad)
 
-            self.grad_squared[i] = self.decay_rate * self.grad_squared[i] + (1.0 - self.decay_rate) * (grad * grad)
-
-            param.value = param.value - self.lr * (grad / (np.sqrt(self.grad_squared[i]) + self.eps))
+            param.value = param.value - self.lr * (param.grad / (np.sqrt(self.grad_squared[i]) + self.eps))
 
 
 class AdaGrad(Optimizer):
     def __init__(self, parameters, lr = 0.01, eps = 1e-7):
         super().__init__(parameters, lr)
+        self.grad_squared = [np.zeros(tensor.shape) for tensor in parameters]
         self.eps = eps
-        self.grad_squared = np.array([np.zeros(tensor.shape) for tensor in parameters])
 
     def step(self):
         for i, param in enumerate(self.parameters):
-            grad = param.grad
+            self.grad_squared[i] = self.grad_squared[i] + (param.grad * param.grad)
 
-            self.grad_squared[i] = self.grad_squared[i] + (grad * grad)
+            ada = param.grad / (np.sqrt(self.grad_squared[i]) + self.eps)
 
-            param.value = param.value - self.lr * (grad / (np.sqrt(self.grad_squared[i]) + self.eps))
+            param.value = param.value - self.lr * ada
 
 
 class Adam(Optimizer):
@@ -74,15 +48,13 @@ class Adam(Optimizer):
         self.beta2 = beta2
         self.eps = eps
 
-        self.moment1 = np.array([np.zeros(tensor.shape) for tensor in parameters])
-        self.moment2 = np.array([np.zeros(tensor.shape) for tensor in parameters])
+        self.moment1 = [np.zeros(tensor.shape) for tensor in parameters]
+        self.moment2 = [np.zeros(tensor.shape) for tensor in parameters]
 
     def step(self):
         for i, param in enumerate(self.parameters):
-            grad = param.grad
-
-            self.moment1[i] = self.beta1 * self.moment1[i] + (1.0 - self.beta1) * grad
-            self.moment2[i] = self.beta2 * self.moment2[i] + (1.0 - self.beta2) * (grad * grad)
+            self.moment1[i] = self.beta1 * self.moment1[i] + (1.0 - self.beta1) * param.grad
+            self.moment2[i] = self.beta2 * self.moment2[i] + (1.0 - self.beta2) * (param.grad * param.grad)
 
             param.value = param.value - self.lr * (self.moment1[i] / (np.sqrt(self.moment2[i]) + self.eps))
 

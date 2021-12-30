@@ -50,7 +50,7 @@ Table of Contents
         * Basic Usage
         * Building Simple MLP
         * User Defined Primitives
-   * [Inspiration](#Inpiration)
+   * [Inspiration](#inpiration)
    * [Liscence](#liscence)
 
 
@@ -226,8 +226,6 @@ print("The gradient of y wrt x: {}".format(x.grad))
 
 ```
 
-<br />
-
 ---
 
 
@@ -253,9 +251,6 @@ Autodiff as a reminder to not give into that convenience without first understan
 the underlying technology.
 
 
-
-
-<br />
 
 <!-- LICENSE -->
 ## License
