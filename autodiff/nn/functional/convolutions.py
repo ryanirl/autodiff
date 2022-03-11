@@ -23,10 +23,7 @@ class conv2d:
         N, C, H, W = x.shape
         F, _, FH, FW = kernel.shape
 
-        x.stride = 1 
-        x.padding = 0
-
-        stride, pad = x.stride, x.padding 
+        stride, pad = kernel.stride, kernel.padding
 
         x_padded = np.pad(x.value, ((0, 0), (0, 0), (pad, pad), (pad, pad)), mode = "constant")
 
@@ -55,7 +52,9 @@ class conv2d:
     def backward(g, x, kernel, output):
         N, C, H, W = x.shape
         F, _, FH, FW = kernel.shape
-        stride, pad = x.stride, x.padding 
+
+        stride, pad = kernel.stride, kernel.padding 
+
         _, _, out_h, out_w = g.shape
 
         ingrad = g.transpose(1, 0, 2, 3).reshape(F, -1)

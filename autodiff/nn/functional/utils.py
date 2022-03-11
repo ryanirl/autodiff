@@ -36,3 +36,8 @@ def col2im_numpy(cols, x_shape, filter_height = 3, filter_width = 3, padding = 1
     return x_padded[:, :, padding : -padding, padding : -padding]
 
 
+def conv2d_output_shape(H, W, kernel_size, padding, stride, out_channels):
+    H_out = (H - kernel_size[0] + (2 * padding)) / stride[0]
+    W_out = (W - kernel_size[1] + (2 * padding)) / stride[1]
+
+    return [H_out, W_out, out_channels]
