@@ -64,6 +64,7 @@ Table of Contents
 <details>
    <summary>Activation Functions:</summary>
 
+</br>
 
 | Activation Function  | Implimented |
 | ----------- | -------------------- |
@@ -81,6 +82,8 @@ Table of Contents
 <details>
    <summary>Loss Functions:</summary>
 
+</br>
+
 | Loss Function       | Implimented          |
 | ------------------- | -------------------- |
 | MAE (L1)            | :white_large_square: |
@@ -89,13 +92,13 @@ Table of Contents
 | Categorical CE      | :white_check_mark:   |
 | Sigmoid & Soft w/CE | :white_check_mark:   |
 | Hinge Loss          | :white_large_square: |
-|                     |                      |
-|                     |                      |
 
 </details>
 
 <details>
    <summary>Optimizers:</summary>
+
+</br>
 
 | Optimizer        | Implimented          |
 | ---------------- | -------------------- |
@@ -106,12 +109,13 @@ Table of Contents
 | RMSProp          | :white_check_mark:   |
 | Adam             | :white_check_mark:   |
 | AdaDelta         | :white_large_square: |
-|                  |                      |
 
 </details>
 
 <details>
    <summary>Layers:</summary>
+
+</br>
 
 | Layer         | Implimented          |
 | ------------- | -------------------- |
