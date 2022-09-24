@@ -1,8 +1,6 @@
 import numpy as np
 
 
-### --- Numerically Stable Utils --- ###
-
 def stable_bce(pred, actual):
     maximum = np.maximum(pred, 0)
     HY = pred * actual
@@ -11,15 +9,13 @@ def stable_bce(pred, actual):
     return np.sum(maximum - HY + log)
 
 
-def clip_stable(value):
-    EPS = 1e-6
-
-    return np.clip(value, EPS, 1.0 - EPS)
+def clip_stable(value, eps = 1e-6):
+    return np.clip(value, eps, 1.0 - eps)
 
 
-def to_logits(pred):
-    EPS = 1e-06
-    pred = np.clip(pred, EPS, 1.0 - EPS)
+def to_logits(pred, eps = 1e-6):
+    pred = np.clip(pred, eps, 1.0 - eps)
+
     logits = np.log(pred / (1.0 - pred))
 
     return logits

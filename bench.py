@@ -2,10 +2,10 @@
 # be found here: https://github.com/karpathy/micrograd/blob/master/demo.ipynb
 # His project was an initial inspiration for mine and I wanted to see how my
 # implimentation would hold up against this.
-
+#
 # The point of bench.py is to benchmark my autodiff with a from scratch
 # implimentation that doesn't have any of the overhead that automatic 
-# differentiation has. See my from scratch implimentation here: 
+# differentiation introduces. See my from scratch implimentation here: 
 # https://github.com/ryanirl/ml-basics/blob/main/deep_learning/moons_from_scratch.py
 # 
 # Benchmark on 2019 Macbook Pro CPU
@@ -17,33 +17,36 @@
 #
 # Without optimization I was averaging 18.9 seconds. Optimizing control flow,
 # update rules, swtiching from Adam to SGD (because my from scratch is SGD),
-# and the unbroadcast function has allowed me to cut this time down to 10.5s
-# on average. This tells me that Autodiff has 4.2 seconds of overhead for
-# this specific example. I am trying to reduce this as much as I can without
+# and tweaking the unbroadcast function has allowed me to cut this time down to
+# 10.5s on average. This means that Autodiff still 4.2 seconds of overhead for
+# this particular example. I am trying to reduce this as much as I can without
 # sacrificing functionality.
 # 
 # Ideas for Optimization:
 #    - Optimize optim classes. 
 #    - Anything that has to compute at each epoch, that has a constant state
-#      throughout the training needs to be optimized (IG: unbroadcast axis which
+#      throughout the training needs to be optimized (IE: unbroadcast axis which
 #      I just optimized)
 #    - Exploiting any parellelism in the underlying AD Computation Graph structure.
 #      This is very hard to exploit as almost everything relies on the previous
-#      computation but I will keep my eye out.
+#      computation but I will keep my eye out for ideas.
 # 
-# ------------------------------------------------------------
-# Fasted lucky run so far: 9.171808004379272 | SUB 10 SECONDS!
-# ------------------------------------------------------------
+# -------------------------------------------------------
+# Fastest run so far: 9.171808004379272 | SUB 10 SECONDS!
+# -------------------------------------------------------
 # 
-# Oct 5th, FOUND THE BOTTLE NECK:
+# Oct 5th, 2021: FOUND THE BOTTLE NECK:
 # Removing the "unbroadcast" from the addition operator (because this model only uses
 # addition) reduces the total runtime to: 6.444812059402466 seconds. That's nearly a
-# 30% increase in speed... YIKES
+# 30% increase in speed... 
 # 
 # To expand on the idea started above. Just setting bias = False in the linear layers
 # doubles the performance of this project.
 # 
 # Speed without Bias: 5.2552649974823 seconds.
+# 
+# Findings:
+#   - Unbroadcast operator extremely slow.
 # 
 
 

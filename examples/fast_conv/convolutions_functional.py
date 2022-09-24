@@ -76,13 +76,7 @@ class testing:
     def backward(g, x, y, z):
         return [g, -g]
 
-@register
-class conv3d:
-    def forward(x, kernel):
-        return
 
-    def backward(g, x, kernel, output):
-        return 
 
 
 

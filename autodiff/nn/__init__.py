@@ -1,8 +1,11 @@
-from .functional import *
-from .optim import *
+from autodiff.nn.containers import Module, Sequential
+from autodiff.nn.utils import stable_bce, clip_stable, to_logits 
 
-from .containers import *
-from .modules import *
-from .optim import *
-from .utils import *
+from autodiff.nn.functional import *
+from autodiff.nn.modules import *
+from autodiff.nn.optim import *
+
+
+
+
 

@@ -41,3 +41,8 @@ def conv2d_output_shape(H, W, kernel_size, padding, stride, out_channels):
     W_out = (W - kernel_size[1] + (2 * padding)) / stride[1]
 
     return [H_out, W_out, out_channels]
+
+
+
+
+

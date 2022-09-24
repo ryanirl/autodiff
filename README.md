@@ -13,33 +13,23 @@ AutoDiff is a lightweight transparent reverse-mode automatic differentiation
 AutoDiff works by breaking up larger user defined functions into primitive
 operators (such as addition, muliplication, etc.) whos derivatives are
 pre-defined. In the forward pass, Autodiff dynamically builds a computation
-graph of larger user defined function using these primitive operators as nodes
-of the computation graph.  Next, the chain rule is applied through a backwards
-pass of the computation graph to compute the derivative of the larger fucntion
-w.r.t. some variable. 
+graph of the larger user defined function using these primitive operators as
+nodes of the computation graph. Next, to calculate the respective derivatives
+w.r.t.  each variable the chain rule is applied during the backwards pass of
+the computation graph. Though there are various techniques for implementing
+reverse-mode automatic differentiation. AutoDiff utilises Python's operator
+overloading capabilities which is by far the simplier and more intuitive of the
+methods. Autodiff is currently split into 2 levels:
 
-Though there are various methods to implement reverse-mode automatic differentiation.
-AutoDiff works via Python's operator overloading capabilities which is by far the
-simplier and more intuitive of the methods. 
-
-Autodiff currently works in 2 levels. Level 1 is largely complete, minus some small
-things I will inevitably end up moving around in the future. Level 2 is more "deep 
-learning", is very messy, not complete, and is basically a rough draft.
-
-**Level 1:** is the base functionality of Autodiff, this level defines the 
+**Level 1 (L1):** Introduces the base functionality of Autodiff. Level 1 defines the 
 Tensor class, supports primitive operators, and includes a decorator that 
-allows users to create custom "primitive" ops on top of Autodiff.
+allows users to create custom "primitive" ops on top of Autodiff. 
 
-**L1 Dependencies:** Numpy
+**Level 2 (L2):** Everything inside of the NN folder. Level 2 adds on
+top of Autodiff using the "register" decorator defined in Level 1. Level 2
+introduces various loss functions, activation functions, and more.
 
-
-**Level 2:** is essentially everything inside of the NN folder. Level 2 adds on
-top of Autodiff by using the "register" decorator defined in Level 1 Autodiff to define 
-additional "primitive" (would it be primitive?) operators such as certain loss 
-functions, activation functions, and more. Level 2 is very much so a work in 
-progress.
-
-**L2 Dependencies:** Numpy, Cython (for convolutions)
+**Dependencies:** NumPy.
 
 ---
 
@@ -121,7 +111,7 @@ Table of Contents
 | ------------- | -------------------- |
 | Linear        | :white_check_mark:   |
 | Sequential    | :white_check_mark:   |
-| 2DConvolution | :white_check_mark:   |
+| 2DConvolution | :white_large_square: |
 | Max Pooling   | :white_large_square: |
 | Batch Norm    | :white_large_square: |
 | Dropout       | :white_large_square: |
@@ -134,25 +124,19 @@ Table of Contents
 
 <!-- TODO -->
 ## TODO:
- - Primitive Functions: aMax
- - Loss Functions: Hinge, MAE
- - Layers: Pooling, Batch Normalization, Dropout, etc.
- - Utils: One-Hot for CCE-Loss, Split for Test/Train (Tensors), Pre-Defined Datasets
- - Grad Check
- - Hardware Acceleration?
- - Examples
- - Documentation
-
+ - Primitive Functions: aMax.
+ - Loss Functions: Hinge and MAE.
+ - Layers: Max/Avg Pooling, Batch Normalization, and Dropout.
+ - Utils: One-Hot for CCE-Loss, Split for Test/Train (Tensors), and Pre-Defined Datasets.
+ - Documentation.
+ - Grad Check.
 
 ---
 
 <!-- INSTALLATION -->
 ## Installation
 
-At the moment just gonna have to clone the repo and make sure you have numpy
-installed (which is it's only dependency) if you want to play with it.
-
-Not tested on Python2.
+For the moment, you have to clone the library to play with it.
 
 ---
 
