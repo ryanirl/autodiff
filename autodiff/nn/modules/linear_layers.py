@@ -17,8 +17,10 @@ class Linear(Module):
     def __call__(self, X):
         output = X.dot(self.weight)
 
-        if self.needs_bias: return output + self.bias
-        else: return output
+        if self.needs_bias: 
+            return output + self.bias
+        else: 
+            return output
 
 
 

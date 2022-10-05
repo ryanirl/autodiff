@@ -1,8 +1,7 @@
 # References:
-# -----------------------------------------
-# I learned about the stable BCE from here:
-# https://rafayak.medium.com/how-do-tensorflow-and-keras-implement-binary-classification-and-the-binary-cross-entropy-function-e9413826da7
-# -----------------------------------------
+# ------------
+# Stable BCE: https://rafayak.medium.com/how-do-tensorflow-and-keras-implement-binary-classification-and-the-binary-cross-entropy-function-e9413826da7
+# ------------
 from autodiff.nn.utils import to_logits, clip_stable, stable_bce
 from autodiff.tensor import register
 
@@ -58,6 +57,6 @@ class sigmoid_binary_cross_entropy:
         return [g_pred, ]
 
 
-        
+
 
 

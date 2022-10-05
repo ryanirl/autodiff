@@ -3,16 +3,13 @@ import numpy as np
 # 'col2im_numpy', '_conv2d_forward', and '_conv2d_backward' is a very lightly
 # modified version from cs231n's fast_layers.py which can be found here:
 # https://cs231n.github.io/assignments2021/assignment2/
-def col2im_numpy(cols, x_shape, filter_height = 3, filter_width = 3, padding = 1, stride = 1):
-    N, C, H, W = x_shape
-
+def col2im(cols, N, C, H, W, filter_height = 3, filter_width = 3, padding = 1, stride = 1):
     out_h = int((H + 2 * padding - filter_height) / stride) + 1
     out_w = int((W + 2 * padding - filter_width) / stride) + 1
 
     H_padded, W_padded = H + 2 * padding, W + 2 * padding
 
-    x_padded = np.zeros((N, C, H_padded, W_padded), dtype=cols.dtype)
-
+    x_padded = np.zeros((N, C, H_padded, W_padded), dtype = cols.dtype)
 
     i0 = np.tile(np.repeat(np.arange(filter_height), filter_width), C)
     i1 = stride * np.repeat(np.arange(out_h), out_w)
@@ -34,13 +31,6 @@ def col2im_numpy(cols, x_shape, filter_height = 3, filter_width = 3, padding = 1
 
     if padding == 0: return x_padded
     return x_padded[:, :, padding : -padding, padding : -padding]
-
-
-def conv2d_output_shape(H, W, kernel_size, padding, stride, out_channels):
-    H_out = (H - kernel_size[0] + (2 * padding)) / stride[0]
-    W_out = (W - kernel_size[1] + (2 * padding)) / stride[1]
-
-    return [H_out, W_out, out_channels]
 
 
 

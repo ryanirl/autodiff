@@ -10,19 +10,13 @@ n = 100
 eta = 0.01
 itters = 5000
 
-###############################
-
-
 
 ### --- Defining Data --- ###
 
 X, y = make_blobs(n_samples = n, centers = 2, random_state = 2)
 
-X = Tensor(X)                  # (100, 2)
-y = Tensor(y[:, np.newaxis])   # (100, 1)
-
-#############################
-
+X = Tensor(X, requires_grad = False)                # (100, 2)
+y = Tensor(y[:, np.newaxis], requires_grad = False) # (100, 1)
 
 
 ### --- Building the Model --- ###
@@ -40,10 +34,6 @@ class LogisticRegression:
 
     def parameters(self):
         return self.layers.parameters()
-
-
-##################################
-
 
 
 ### --- Training --- ###
@@ -66,13 +56,6 @@ for i in range(5000):
     loss.backward()
 
     optimizer.step()
-
-    # Zero grad doesn't include this (working on a fix)
-    X.grad = 0
-    y.grad = 0
-
-########################
-
 
 
 ### --- Visualizing --- ###
@@ -103,6 +86,7 @@ plt.plot(x, hyperplane, '-', color = "red")
 
 plt.show()
 
-###########################
+
+
 
 

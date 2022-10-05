@@ -6,7 +6,7 @@ from Cython.Build import cythonize
 import numpy
 
 extensions = [
-  Extension('cython_col2im', ['cython_col2im.pyx'],
+  Extension("cython_col2im", ["cython_col2im.pyx"],
             include_dirs = [numpy.get_include()]
   ),
 ]
@@ -14,3 +14,6 @@ extensions = [
 setup(
     ext_modules = cythonize(extensions),
 )
+
+
+

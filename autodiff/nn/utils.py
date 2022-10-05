@@ -3,10 +3,10 @@ import numpy as np
 
 def stable_bce(pred, actual):
     maximum = np.maximum(pred, 0)
-    HY = pred * actual
+
     log = np.log(1.0 + np.exp(-np.abs(pred)))
 
-    return np.sum(maximum - HY + log)
+    return np.sum(maximum - (pred * actual) + log)
 
 
 def clip_stable(value, eps = 1e-6):

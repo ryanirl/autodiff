@@ -1,20 +1,12 @@
-from autodiff.nn.utils import to_logits, clip_stable, stable_bce
-from autodiff.nn.functional.utils import col2im_numpy
 from autodiff.tensor import register
 
 from numpy.lib.stride_tricks import as_strided
 import numpy as np
 
-from autodiff.nn.functional.cython_col2im import col2im_6d_cython
-
-
-@register
-class conv1d:
-    def forward(x, kernel):
-        return
-
-    def backward(g, x, kernel, output):
-        return 
+# Which implementation of col2im to test. 
+#from col2im_c.fast_conv import col2im
+#from col2im_cython.cython_col2im import col2im
+from col2im_python.col2im_python import col2im
 
 
 @register
@@ -38,13 +30,11 @@ class conv2d:
         strides = x.value.itemsize * np.array((H * W, W, 1, C * H * W, stride * W, stride))
 
         im2col = np.ascontiguousarray(as_strided(x_padded, shape = shape, strides = strides))
-
         im2col.shape = (C * FH * FW, N * out_h * out_w) 
 
         x.cached_im2col = im2col
 
         out = kernel.value.reshape(F, -1).dot(im2col)
-
         out.shape = (F, N, out_h, out_w)
 
         return np.ascontiguousarray(out.transpose(1, 0, 2, 3)) 
@@ -64,17 +54,9 @@ class conv2d:
         dx_im2col = kernel.value.reshape(F, -1).T.dot(ingrad)
         dx_im2col.shape = (C, FH, FW, N, out_h, out_w)
 
-        dx = col2im_6d_cython(dx_im2col, N, C, H, W, FH, FW, pad, stride)
+        dx = col2im(dx_im2col, N, C, H, W, FH, FW, pad, stride)
 
         return [dx, dw]
-
-@register
-class testing:
-    def forward(x, y):
-        return x.value - y.value
-
-    def backward(g, x, y, z):
-        return [g, -g]
 
 
 

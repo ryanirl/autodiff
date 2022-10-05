@@ -30,8 +30,8 @@ for j in range(K):
 temp = np.zeros((y.size, y.max() + 1))
 temp[np.arange(y.size), y] = 1
 
-y = Tensor(temp)
-X = Tensor(X)
+y = Tensor(temp, requires_grad = False)
+X = Tensor(X, requires_grad = False)
 
 
 ### --- Building the Model --- ###
@@ -40,6 +40,7 @@ class Model:
     def __init__(self):
         self.layers = nn.Sequential(
             nn.Linear(2, 100),
+#            nn.Sigmoid(),
             nn.ReLU(),
             nn.Linear(100, 3),
             nn.Softmax()
@@ -73,11 +74,6 @@ for i in range(1000):
     loss.backward()
 
     optimizer.step()
-
-    X.grad = 0
-    y.grad = 0
-
-
 
 
 ### --- Visualization --- ###

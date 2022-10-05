@@ -30,7 +30,6 @@ def unbroadcast_axes(shape_in, shape_out):
     if shape_out == (): return None
 
     reduction_axes = []
-
     for i in range(len(shape_in)):
         if (shape_in[i] > shape_out[i]) & (shape_out[i] == 1):
             reduction_axes += [i]

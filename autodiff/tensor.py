@@ -4,7 +4,6 @@ from autodiff.ops import *
 from inspect import signature
 import numpy as np
 
-# Helper Util
 
 class Tensor:
     def __init__(self, value, _children = [], requires_grad = True):
@@ -151,7 +150,7 @@ class Tensor:
 
     ### --- Backprop & Computation Graph Functions --- ###
 
-    def toposort(self):
+    def topo_sort(self):
         topo = []
         visited = set()
 
@@ -168,37 +167,19 @@ class Tensor:
 
         self._topo = topo
 
-    def topo_update(self):
-        """
-        If you update a leaf node, this may be used to update the rest
-        of the graph along with it. That being forward then backwards
-        propogating that change through the graph. If control flow allows
-        for it, this would be an opimization to the naive 'backward()'
-        method assuming large epochs.
-
-        """
-        for tensor in self._topo:
-            tensor.value = tensor._forward(*tensor._children)
-            tensor.grad = 0
-
-        self.grad = np.ones(np.shape(self.value))
-
-        for tensor in self._topo:
-            grad = tensor._outgrad(tensor.grad, *tensor._children, tensor)
-
-            for child, ingrad in zip(tensor._children, grad):
-                child.grad = child.grad + ingrad
-
     def backward(self):
-        self.toposort()
+        self.topo_sort()
 
         self.grad = np.ones(np.shape(self.value))
 
         for tensor in self._topo:
+            # This is a GOTCHA of the current implementation, even if
+            # requires_grad = True, the gradient still gets computed. 
             grad = tensor._outgrad(tensor.grad, *tensor._children, tensor)
 
             for child, ingrad in zip(tensor._children, grad):
-                child.grad = child.grad + ingrad
+                if child.requires_grad:
+                    child.grad = child.grad + ingrad
 
 
 ### ----- OP BUILDER ----- ### 
@@ -208,8 +189,7 @@ def OP(op, *args, **kwargs):
 
     tensors = [arg for arg in args if isinstance(arg, Tensor)]
 
-#    requires_grad = True if sum([tensor.requires_grad for tensor in tensors]) > 0 else False
-    requires_grad = True if np.all([tensor.requires_grad for tensor in tensors]) else False
+    requires_grad = True if np.any([tensor.requires_grad for tensor in tensors]) else False
 
     output_tensor = Tensor(value, tensors, requires_grad)
 
@@ -220,7 +200,7 @@ def OP(op, *args, **kwargs):
     return output_tensor
 
 
-class Function():
+class Function:
     def __new__(cls, *args, **kwargs):
         parameters = list(signature(cls.forward).parameters)
         parameters[0] = "self"
@@ -238,6 +218,8 @@ def register(cls):
     cls()
 
     return cls
+
+
 
 
 

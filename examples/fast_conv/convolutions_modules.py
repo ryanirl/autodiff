@@ -4,14 +4,6 @@ from autodiff.tensor import Tensor
 import numpy as np
 
 
-class Conv1D:
-    def __init__(self):
-        pass
-
-    def __call__(self):
-        pass
-
-
 class Conv2D(Module):
     def __init__(self, in_channels, out_channels, kernel_size = 3, stride = 1, padding = 0, bias = False):
         super().__init__()
@@ -40,10 +32,6 @@ class Conv2D(Module):
         else: return output
 
 
-class Conv3D:
-    def __init__(self):
-        pass
 
-    def __call__(self):
-        pass
+
 

@@ -208,9 +208,6 @@ for i in range(1000):
 
     optimizer.step()
 
-    X.grad = 0 # Required if X is Tensor
-    y.grad = 0 # Required if y is Tensor
-
 ```
 
 Plotting the decision boundry gives: 
