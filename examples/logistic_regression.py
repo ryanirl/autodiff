@@ -1,8 +1,10 @@
 from autodiff.tensor import Tensor
 import autodiff.nn as nn
-import numpy as np
+
 from sklearn.datasets import make_blobs
 import matplotlib.pyplot as plt
+import numpy as np
+
 
 ### --- Hyperparameters --- ###
 
@@ -11,7 +13,7 @@ eta = 0.01
 itters = 5000
 
 
-### --- Defining Data --- ###
+### --- Data --- ###
 
 X, y = make_blobs(n_samples = n, centers = 2, random_state = 2)
 
@@ -73,9 +75,9 @@ X = X.value
 
 for i in range(n):
     if (Y[i] == 1):
-        plt.scatter(X[i][0], X[i][1], color="green") 
+        plt.scatter(X[i][0], X[i][1], color = "green") 
     else:
-        plt.scatter(X[i][0], X[i][1], color="blue") 
+        plt.scatter(X[i][0], X[i][1], color = "blue") 
 
     
 x = np.linspace(-10, 10, 10)

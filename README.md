@@ -37,7 +37,6 @@ introduces various loss functions, activation functions, and more.
 Table of Contents
 =================
    * [Supported Features](#currently-supported-nn-features)
-   * [TODO](#todo)
    * [Installation](#installation)
    * [Usage](#usage)
         * Basic Usage
@@ -118,18 +117,6 @@ Table of Contents
 
 </details>
 
-
----
-
-
-<!-- TODO -->
-## TODO:
- - Primitive Functions: aMax.
- - Loss Functions: Hinge and MAE.
- - Layers: Max/Avg Pooling, Batch Normalization, and Dropout.
- - Utils: One-Hot for CCE-Loss, Split for Test/Train (Tensors), and Pre-Defined Datasets.
- - Documentation.
- - Grad Check.
 
 ---
 

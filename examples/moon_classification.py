@@ -6,9 +6,10 @@
 from autodiff.tensor import Tensor
 import autodiff.nn as nn
 
-import numpy as np
-import matplotlib.pyplot as plt
 from sklearn.datasets import make_moons
+import matplotlib.pyplot as plt
+import numpy as np
+
 
 n = 100
 
@@ -90,4 +91,5 @@ plt.show()
 
 
             
+
 

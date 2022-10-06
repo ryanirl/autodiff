@@ -1,10 +1,12 @@
 from autodiff.tensor import Tensor
 import autodiff.nn as nn
+
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelBinarizer
+from sklearn.datasets import load_iris
+
 import numpy as np
 
-from sklearn.datasets import load_iris
-from sklearn.preprocessing import LabelBinarizer
-from sklearn.model_selection import train_test_split
 
 ### --- Preparing the Data --- ### 
 
@@ -18,10 +20,8 @@ y = label_binarizer.transform(y)
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, shuffle = True)
 
-X_train, y_train = Tensor(X_train), Tensor(y_train)
-
-################################## 
-
+X_train = Tensor(X_train, requires_grad = False)
+y_train = Tensor(y_train, requires_grad = False)
 
 
 ### -- Training --- ###
@@ -50,13 +50,6 @@ for i in range(10000):
 
     optimizer.step()
 
-    X_train.grad = 0
-    y_train.grad = 0
-
-
-######################
-
-
 
 ### --- Checking the Testing Data --- ###
 
@@ -69,19 +62,15 @@ preds = linear.softmax()
 # Setting the highest value to 1 and the rest to 0 in each row
 preds = np.eye(preds.value.shape[1])[preds.value.argmax(1)]
 
-print(preds)
-
-print(y_test.value)
-
 correct = 0
 incorrect = 0
 for i in range(len(preds)):
     if (preds[i] == y_test.value[i]).all():
         correct += 1 
-    else: incorrect += 1
+    else: 
+        incorrect += 1
 
-# When testing on my own the worst I got 35 correct and 3 incorrect.
-# The best being 100% corrrect 
+
 print()
 print("Test Data: ")
 print("---------------------------------------")
@@ -90,8 +79,6 @@ print("---------------------------------------")
 print("Amount predicted in-correctly: | {}".format(incorrect))
 print("---------------------------------------")
 print()
-
-#########################################
 
 
 

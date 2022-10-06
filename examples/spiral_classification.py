@@ -1,10 +1,12 @@
 # This example is froma case study done in Stanford's CS321n class. The
 # information can be found here: https://cs231n.github.io/neural-networks-case-study/
 
-import numpy as np
-import matplotlib.pyplot as plt
 from autodiff.tensor import Tensor
 import autodiff.nn as nn
+
+import matplotlib.pyplot as plt
+import numpy as np
+
 
 ### --- Dataset as Defined in the Case Study --- ###
 
@@ -13,7 +15,6 @@ D = 2 # dimensionality
 K = 3 # number of classes
 
 X = np.zeros((N * K, D)) # data matrix (each row = single example)
-
 y = np.zeros(N * K, dtype = 'uint8') # class labels
 
 for j in range(K):
@@ -22,7 +23,6 @@ for j in range(K):
     t = np.linspace(j * 4, (j + 1) * 4, N) + np.random.randn(N) * 0.2 # theta
     X[ix] = np.c_[r * np.sin(t), r * np.cos(t)]
     y[ix] = j
-
 
 
 ### --- One-Hot Encoding as required by Autodiff's CCE --- ###
@@ -52,16 +52,15 @@ class Model:
     def forward(self, X):
         return self.layers(X)
 
-# Defining the Loss
+
+### --- Training --- ###
+
 loss_fun = nn.CategoricalCrossEntropy()
 
-# Instantiating the Model
 model = Model()
 
-# Defining the Optimizer
 optimizer = nn.Adam(model.parameters())
 
-# Training
 for i in range(1000):
     optimizer.zero_grad()
 
@@ -108,6 +107,8 @@ plt.contourf(xx, yy, Z, levels = 2, cmap = plt.cm.ocean, alpha = 0.9)
 plt.scatter(X[:, 0], X[:, 1], c = y, s = 15, cmap = plt.cm.ocean) 
 
 plt.show()
+
+
 
 
 

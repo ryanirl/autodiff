@@ -1,35 +1,17 @@
-import numpy as np
 from autodiff.tensor import Tensor, OP
-#from autodiff.ops import grad_fun, value_fun
 from autodiff.utils import check
 import autodiff.nn as nn
+
+import numpy as np
 import time 
 
-# This is a mess 
-def softmaxCCE():
-    a = Tensor(np.array([[1, 2, 3], [1, 2, 3]]))
-    b = Tensor(np.array([[0, 1, 0], [1, 0, 0]]))
 
-    loss_func = nn.CrossEntropy() 
-
-    c = a.softmax()
-
-    loss = loss_func(c, b)
-
-    loss.backward()
-
-    print(c.grad)
-    print(a.grad)
-
-
-
-def test0():
-    # Test
+def test_grad():
     # Should be:
-    # Value: 22500
-    # df/dA: 310500
-    # df/dB: 242996
-    # df/dC: -3
+    #  - Value: 22500
+    #  - df/dA: 310500
+    #  - df/dB: 242996
+    #  - df/dC: -3
 
     a = Tensor(2)
     b = Tensor(3)
@@ -52,72 +34,26 @@ def test0():
     print("grad wrt B: ({}) should be 242996".format(b.grad))
     print("grad wrt C: ({}) should be -3".format(c.grad))
 
-def speedtest():
 
-    # This is a standard test for me:
-    # Average run time using topo sort and old backwards method: 7.4s over 5 runs
-    # Average run time using new method without topo sort: 6.3s over 5 runs
-    # Literally cut off a second which is quite large in the grand scheme of things
+def test_softmax():
+    a = Tensor(np.array([[1, 2, 3], [1, 2, 3]]))
+    b = Tensor(np.array([[0, 1, 0], [1, 0, 0]]))
 
-    # This takes 3 seconds to run 100,000 iterations without autodiff and implimenting 
-    # it by hand with computing the gradient of OLS. Meaning that it only takes twice
-    # the time using AutoDiff and not being told it's gradient. That's quite impressive
+    loss_func = nn.CrossEntropy() 
 
-    start = time.time()
+    c = a.softmax()
 
-    def OLS_loss(w, x, b, y):
-        return (y - (w * x + b)) ** 2
+    loss = loss_func(c, b)
 
-    class Neuron:
-        def __init__(self, loss, dims):
-            self.weights = Tensor([np.random.uniform() for i in range(dims)])
-#            self.weights = Tensor.uniform(1, 1)
-            self.bias = Tensor([np.random.uniform()])
-#            self.bias = Tensor.uniform(1, 1)
-            self.dims = dims
-            self.loss = loss
+    loss.backward()
 
-        def forward(self, x, y):
-            self.y = y
-            self.x = x
-
-        def step(self, itter, eta):
-            for i in range(itter):
-                self.loss(self.weights, self.x, self.bias, self.y).backward()
-
-                self.weights.value = self.weights.value - eta * self.weights.grad.sum()
-                self.bias.value = self.bias.value - eta * self.bias.grad.sum()
-
-                self.weights.grad = 0
-                self.bias.grad = 0
-                self.x.grad = 0
-                self.y.grad = 0
-
-            return self.weights, self.bias
-
-    x = Tensor([0, 1, 3], requires_grad = False)
-    y = Tensor([1, 4, 10], requires_grad = False)
-
-    neuron = Neuron(OLS_loss, 1)
-    neuron.forward(x, y)
-    weight, bias = neuron.step(1000, 0.01)
-    print(weight.value)
-    print(bias.value)
-
-    end = time.time()
-
-    print(f"Runtime of the program is {end - start}")
-
+    print(c.grad)
+    print(a.grad)
 
 
 if __name__ == "__main__":
-    softmaxCCE()
-    test0()
-    speedtest()
-
-
-
-
+    test_grad()
+    test_softmax()
 
 
 

@@ -8,6 +8,11 @@ conv_test.py
 testing.py
 conv_dump.py
 bench.py
+private_tests.py
+examples/fast_conv/col2im_cython/cython_col2im.c
+
+docs/custom_primitives.md
+docs/activation_functions.md
 
 # Created by https://www.toptal.com/developers/gitignore/api/macos,jupyternotebooks,python
 # Edit at https://www.toptal.com/developers/gitignore?templates=macos,jupyternotebooks,python

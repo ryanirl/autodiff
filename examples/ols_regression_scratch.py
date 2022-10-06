@@ -1,17 +1,21 @@
-# This is by far the simplest example I could come up with
 from autodiff.tensor import Tensor
+
 import numpy as np
+
 
 # quite obvious the pattern here is y = 3x + 1
 # Therefore out weight should = 3 and our bias should = 1
 x = Tensor([1, 2, 3, 4, 5])
 y = Tensor([4, 7, 10, 13, 16])
 
+
 def ols_loss(y, pred):
     return (y - pred) ** 2
 
+
 def pred(w, x, b):
     return w.dot(x) + b
+
 
 class OLS:
     def __init__(self, dims):
@@ -46,15 +50,7 @@ class OLS:
 model = OLS((1, 1))
 w, b = model.train(x, y, 1000, 0.01)
 
-print(w)
-print(b)
-
-# Prints 3, 1 just like it is expected to do.
-
-
-
-
-
+print(f"{w}x + {b}")
 
 
 
